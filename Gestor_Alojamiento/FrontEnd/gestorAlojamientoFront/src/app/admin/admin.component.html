@@ -1,122 +1,291 @@
-<h1 class="text-center mt-2 mb-5 bg-primary-subtle py-3 rounded">Panel de administracion</h1>
-<h2 class="text-center mb-3">Reservas</h2>
-<div class="table-responsive">
-<table  class="table table-bordered text-center mx-auto w-100">
-   <thead class="table-light">
-  <tr>
-    <th>ID</th>
-    <th>Persona</th>
-    <th>Establecimiento</th>
-    <th>Habitación</th>
-    <th>Entrada</th>
-    <th>Salida</th>
-    <th>Motivo</th>  
-    <th>Observaciones</th>
-  </tr>
-  </thead>
+<h1 class="text-center bg-primary-subtle p-4 mb-5">Panel de administracion</h1>
+<h4 class="mb-5 text-center">Gestion de Residencias </h4>
 
-  <tr *ngFor="let reserva of reservas">
-    <td>{{ reserva.id }}</td>
-    <td>{{ reserva.persona.dni}}</td>
-    <td>{{ reserva.establecimiento.nombre }}</td>
-    <td>{{ reserva.habitacion.numero }}</td>
-    <td>{{ reserva.fechaEntrada | date }}</td>
-    <td>{{ reserva.fechaSalida | date }}</td>
-    <td>{{ reserva.motivoEntrada}}</td>
-    <td>{{ reserva.observaciones}}</td>
-
-    
-  </tr>
-</table>
+<div class="d-flex justify-content-center mb-4">
+  <nav class="nav nav-tabs">
+    <a class="nav-link" [class.active]="mostrarReservas" (click)="mostrarEntidad('reservas')">Reservas</a>
+    <a class="nav-link" [class.active]="mostrarPersonas" (click)="mostrarEntidad('personas')">Personas</a>
+    <a class="nav-link" [class.active]="mostrarHabitaciones" (click)="mostrarEntidad('habitaciones')">Habitaciones</a>
+    <a class="nav-link" [class.active]="mostrarEstablecimientos" (click)="mostrarEntidad('establecimientos')">Establecimientos</a>
+    <a class="nav-link" [class.active]="mostrarUsuarios" (click)="mostrarEntidad('usuarios')">Usuarios</a>
+  </nav>
+</div>
+<!-- Tabla Reservas -->
+<div *ngIf="mostrarReservas" class="mb-5">
+  <h2 class="text-center">Reservas</h2>
+  <button class="btn btn-success mb-3" (click)="abrirNuevo('reservas')">Añadir Reserva</button>
+  <table class="table table-bordered text-center">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Persona DNI</th>
+        <th>Establecimiento ID</th>
+        <th>Habitación ID</th>
+        <th>Fecha Entrada</th>
+        <th>Fecha Salida</th>
+        <th>Motivo Entrada</th>
+        <th>Observaciones</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let r of reservas">
+        <td>{{ r.id }}</td>
+        <td>{{ r.persona.dni }}</td>
+        <td>{{ r.establecimiento.id }}</td>
+        <td>{{ r.habitacion.id }}</td>
+        <td>{{ r.fechaEntrada | date }}</td>
+        <td>{{ r.fechaSalida | date }}</td>
+        <td>{{ r.motivoEntrada }}</td>
+        <td>{{ r.observaciones }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('reservas', r)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('reservas', r)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
-<h2 class="text-center my-4">Personas</h2>
-<table class="table table-bordered text-center mx-auto w-100">
-  <thead class="table-light">
-    <tr>
-      <th>Nombre</th>
-      <th>Apellidos</th>
-      <th>DNI</th>
-      <th>Fecha de nacimiento</th>
-      <th>Teléfono</th>
-      <th>Email</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let persona of personas">
-      <td>{{ persona.nombre }}</td>
-      <td>{{ persona.apellidos }}</td>
-      <td>{{ persona.dni }}</td>
-      <td>{{ persona.fechaNacimiento | date }}</td>
-      <td>{{ persona.telefono }}</td>
-      <td>{{ persona.email }}</td>
-    </tr>
-  </tbody>
-</table>
+<!-- Tabla Personas -->
+<div *ngIf="mostrarPersonas" class="mb-5">
+  <h2 class="text-center">Personas</h2>
+  <button class="btn btn-success mb-3" (click)="abrirNuevo('personas')">Añadir Persona</button>
+  <table class="table table-bordered text-center">
+    <thead class="table-light">
+      <tr>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>DNI</th>
+        <th>Fecha Nacimiento</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of personas">
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.apellidos }}</td>
+        <td>{{ p.dni }}</td>
+        <td>{{ p.fechaNacimiento | date }}</td>
+        <td>{{ p.telefono }}</td>
+        <td>{{ p.email }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('personas', p)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('personas', p)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
+<!-- Tabla Habitaciones -->
+<div *ngIf="mostrarHabitaciones" class="mb-5">
+  <h2 class="text-center mb-3">Habitaciones</h2>
+  <button class="btn btn-success mb-2" (click)="abrirNuevo('habitaciones')">Añadir Habitación</button>
+  <table class="table table-bordered text-center">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Número</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th>Establecimiento ID</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let h of habitaciones">
+        <td>{{ h.id }}</td>
+        <td>{{ h.numero }}</td>
+        <td>{{ h.tipo }}</td>
+        <td>{{ h.estado }}</td>
+        <td>{{ h.establecimiento.id }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('habitaciones', h)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('habitaciones', h)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<h2 class="text-center mt-5">Establecimientos</h2>
-<table class="table table-bordered text-center mx-auto w-100">
-  <thead class="table-light">
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Dirección</th>
-      <th>Teléfono</th>
-      <th>Capacidad</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let est of establecimientos">
-      <td>{{ est.id }}</td>
-      <td>{{ est.nombre }}</td>
-      <td>{{ est.direccion }}</td>
-      <td>{{ est.telefono }}</td>
-      <td>{{ est.capacidad }}</td>
-    </tr>
-  </tbody>
-</table>
+<!-- Tabla Establecimientos -->
+<div *ngIf="mostrarEstablecimientos" class="mb-5">
+  <h2 class="text-center">Establecimientos</h2>
+  <button class="btn btn-success mb-3" (click)="abrirNuevo('establecimientos')">Añadir Establecimiento</button>
+  <table class="table table-bordered text-center">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Dirección</th>
+        <th>Teléfono</th>
+        <th>Capacidad</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let e of establecimientos">
+        <td>{{ e.id }}</td>
+        <td>{{ e.nombre }}</td>
+        <td>{{ e.direccion }}</td>
+        <td>{{ e.telefono }}</td>
+        <td>{{ e.capacidad }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('establecimientos', e)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('establecimientos', e)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<!-- HABITACIONES -->
-<h2 class="text-center mt-5">Habitaciones</h2>
-<table class="table table-bordered text-center mx-auto w-100">
-  <thead class="table-light">
-    <tr>
-      <th>ID</th>
-      <th>Número</th>
-      <th>Tipo</th>
-      <th>Estado</th>
-      <th>Establecimiento</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let hab of habitaciones">
-      <td>{{ hab.id }}</td>
-      <td>{{ hab.numero }}</td>
-      <td>{{ hab.tipo }}</td>
-      <td>{{ hab.estado }}</td>
-      <td>{{ hab.establecimiento.nombre }}</td>
-    </tr>
-  </tbody>
-</table>
+<!-- Tabla Usuarios -->
+<div *ngIf="mostrarUsuarios" class="mb-5">
+  <h2 class="text-center">Usuarios</h2>
+  <button class="btn btn-success mb-3" (click)="abrirNuevo('usuarios')">Añadir Usuario</button>
+  <table class="table table-bordered text-center">
+    <thead class="table-light">
+      <tr>
+        <th>ID</th>
+        <th>Nombre de usuario</th>
+        <th>Contraseña</th>
+        <th>Rol</th>
+        <th>Email</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of usuarios">
+        <td>{{ u.id }}</td>
+        <td>{{ u.nombreUsuario }}</td>
+        <td>{{u.contrasenya}}</td>
+        <td>{{ u.rol }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('usuarios', u)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('usuarios', u)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<!-- USUARIOS -->
-<h2 class="text-center mt-5">Usuarios</h2>
-<table class="table table-bordered text-center mx-auto w-100 mb-5">
-  <thead class="table-light">
-    <tr>
-      <th>ID</th>
-      <th>Nombre de Usuario</th>
-      <th>Email</th>
-      <th>Rol</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let usuario of usuarios">
-      <td>{{ usuario.id }}</td>
-      <td>{{ usuario.nombreUsuario }}</td>
-      <td>{{ usuario.email }}</td>
-      <td>{{ usuario.rol }}</td>
-    </tr>
-  </tbody>
-</table>
+<!-- Modal para formulario Añadir/Editar -->
+<div *ngIf="editandoEntidad" class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content p-3">
+      <h5>{{ esNuevo ? 'Añadir' : 'Editar' }} {{ entidadTipo | titlecase }}</h5>
+
+      <!-- Formulario dinámico según entidad -->
+      <form (ngSubmit)="guardar()" #formAdmin="ngForm">
+
+        <!-- Reserva -->
+        <div *ngIf="entidadTipo === 'reservas'">
+          <label>ID (solo editar no nuevo)</label>
+          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
+
+          <label>Persona DNI</label>
+          <input type="text" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" class="form-control mb-2" required>
+
+          <label>Establecimiento ID</label>
+          <input type="number" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
+
+          <label>Habitación ID</label>
+          <input type="number" [(ngModel)]="editandoEntidad.habitacion.id" name="habitacionId" class="form-control mb-2" required>
+
+          <label>Fecha Entrada</label>
+          <input type="date" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" class="form-control mb-2" required>
+
+          <label>Fecha Salida</label>
+          <input type="date" [(ngModel)]="editandoEntidad.fechaSalida" name="fechaSalida" class="form-control mb-2" required>
+
+          <label>Motivo Entrada</label>
+          <input type="text" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada" class="form-control mb-2" required>
+
+          <label>Observaciones</label>
+          <textarea [(ngModel)]="editandoEntidad.observaciones" name="observaciones" class="form-control mb-2"></textarea>
+        </div>
+
+        <!-- Persona -->
+        <div *ngIf="entidadTipo === 'personas'">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control mb-2" required>
+
+          <label>Apellidos</label>
+          <input type="text" [(ngModel)]="editandoEntidad.apellidos" name="apellidos" class="form-control mb-2" required>
+
+          <label>DNI</label>
+          <input type="text" [(ngModel)]="editandoEntidad.dni" name="dni" [readonly]="!esNuevo" class="form-control mb-2" required>
+
+          <label>Fecha de nacimiento</label>
+          <input type="date" [(ngModel)]="editandoEntidad.fechaNacimiento" name="fechaNacimiento" class="form-control mb-2" required>
+
+          <label>Teléfono</label>
+          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2" required>
+
+          <label>Email</label>
+          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2" required>
+        </div>
+
+        <!-- Habitacion -->
+        <div *ngIf="entidadTipo === 'habitaciones'">
+          <label>ID (solo editar no nuevo)</label>
+          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
+
+          <label>Número</label>
+          <input type="number" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control mb-2" required>
+
+          <label>Tipo</label>
+          <input type="text" [(ngModel)]="editandoEntidad.tipo" name="tipo" class="form-control mb-2" required>
+
+          <label>Estado</label>
+          <input type="text" [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control mb-2" required>
+
+          <label>Establecimiento ID</label>
+          <input type="number" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
+        </div>
+
+        <!-- Establecimiento -->
+        <div *ngIf="entidadTipo === 'establecimientos'">
+          <label>ID (solo editar no nuevo)</label>
+          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
+
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control mb-2" required>
+
+          <label>Dirección</label>
+          <input type="text" [(ngModel)]="editandoEntidad.direccion" name="direccion" class="form-control mb-2" required>
+
+          <label>Teléfono</label>
+          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2" required>
+
+          <label>Capacidad</label>
+          <input type="number" [(ngModel)]="editandoEntidad.capacidad" name="capacidad" class="form-control mb-2" required>
+        </div>
+
+        <!-- Usuario -->
+        <div *ngIf="entidadTipo === 'usuarios'">
+          <label>ID (solo editar no nuevo)</label>
+          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
+
+          <label>Nombre de usuario</label>
+          <input type="text" [(ngModel)]="editandoEntidad.username" name="username" class="form-control mb-2" required>
+
+          <label>Rol</label>
+          <input type="text" [(ngModel)]="editandoEntidad.role" name="role" class="form-control mb-2" required>
+
+          <label>Email</label>
+          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2" required>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="formAdmin.invalid">{{ esNuevo ? 'Añadir' : 'Guardar' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
