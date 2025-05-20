@@ -1,8 +1,8 @@
 <h1 class="text-center mt-2 mb-5 bg-primary-subtle py-3 rounded">Panel de administracion</h1>
 <h2 class="text-center mb-3">Reservas</h2>
 <div class="table-responsive">
-<table  class="table table-bordered table-hover text-center mx-auto w-75">
-   <thead class="thead-light bg-info text-white">
+<table  class="table table-bordered text-center mx-auto w-100">
+   <thead class="table-light">
   <tr>
     <th>ID</th>
     <th>Persona</th>
@@ -31,10 +31,92 @@
 </div>
 
 <h2 class="text-center my-4">Personas</h2>
-<ul class="list-group w-100 mx-auto">
-  <li class="list-group-item" *ngFor="let persona of personas">
-    {{ persona.nombre }} {{ persona.apellidos }} - DNI: {{ persona.dni }} -
-    Nacimiento: {{ persona.fechaNacimiento | date }} - Tel: {{ persona.telefono }} -
-    Email: {{ persona.email }}
-  </li>
-</ul>
+<table class="table table-bordered text-center mx-auto w-100">
+  <thead class="table-light">
+    <tr>
+      <th>Nombre</th>
+      <th>Apellidos</th>
+      <th>DNI</th>
+      <th>Fecha de nacimiento</th>
+      <th>Teléfono</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let persona of personas">
+      <td>{{ persona.nombre }}</td>
+      <td>{{ persona.apellidos }}</td>
+      <td>{{ persona.dni }}</td>
+      <td>{{ persona.fechaNacimiento | date }}</td>
+      <td>{{ persona.telefono }}</td>
+      <td>{{ persona.email }}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<h2 class="text-center mt-5">Establecimientos</h2>
+<table class="table table-bordered text-center mx-auto w-100">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Dirección</th>
+      <th>Teléfono</th>
+      <th>Capacidad</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let est of establecimientos">
+      <td>{{ est.id }}</td>
+      <td>{{ est.nombre }}</td>
+      <td>{{ est.direccion }}</td>
+      <td>{{ est.telefono }}</td>
+      <td>{{ est.capacidad }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- HABITACIONES -->
+<h2 class="text-center mt-5">Habitaciones</h2>
+<table class="table table-bordered text-center mx-auto w-100">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Número</th>
+      <th>Tipo</th>
+      <th>Estado</th>
+      <th>Establecimiento</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let hab of habitaciones">
+      <td>{{ hab.id }}</td>
+      <td>{{ hab.numero }}</td>
+      <td>{{ hab.tipo }}</td>
+      <td>{{ hab.estado }}</td>
+      <td>{{ hab.establecimiento.nombre }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- USUARIOS -->
+<h2 class="text-center mt-5">Usuarios</h2>
+<table class="table table-bordered text-center mx-auto w-100 mb-5">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Nombre de Usuario</th>
+      <th>Email</th>
+      <th>Rol</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let usuario of usuarios">
+      <td>{{ usuario.id }}</td>
+      <td>{{ usuario.nombreUsuario }}</td>
+      <td>{{ usuario.email }}</td>
+      <td>{{ usuario.rol }}</td>
+    </tr>
+  </tbody>
+</table>

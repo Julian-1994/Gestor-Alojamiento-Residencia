@@ -7,4 +7,6 @@ export interface Establecimiento {
   direccion: string;
   telefono: string;
   capacidad: number;
+  habitaciones?: Habitacion[]; // opcional si no se usa en el frontend
+  reservas?: Reserva[];        // opcional si no se usa directamente
 }

@@ -6,7 +6,8 @@ export type EstadoHabitacion = 'DISPONIBLE' | 'OCUPADA';
 export interface Habitacion {
   id: number;
   numero: string;
-  establecimiento_id: number;
-  estado: EstadoHabitacion;
   tipo: string;
+  estado: EstadoHabitacion;
+  establecimiento: Establecimiento;
+  reservas?: Reserva[];
 }
