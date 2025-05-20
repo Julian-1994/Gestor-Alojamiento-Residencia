@@ -43,7 +43,7 @@ public class Reserva {
 	    private String observaciones;
 		public Reserva() {
 			super();
-			// TODO Auto-generated constructor stub
+		
 		}
 		public Reserva(int id, Persona persona, Establecimiento establecimiento, Habitacion habitacion,
 				Date fechaEntrada, Date fechaSalida, String motivoEntrada, String observaciones) {

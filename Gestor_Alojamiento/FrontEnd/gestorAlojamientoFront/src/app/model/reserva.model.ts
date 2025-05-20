@@ -4,11 +4,11 @@ import { Habitacion } from './habitacion.model';
 
 export interface Reserva {
   id: number;
-  persona_dni: Persona;
-  establecimiento_id: Establecimiento;
-  habitacion_id: Habitacion;
-  fecha_entrada: Date;
-  fecha_salida: Date;
-  motivo_entrada: string;
-  observaciones: string;
+  persona: Persona;
+  establecimiento: Establecimiento;
+  habitacion: Habitacion;
+  fechaEntrada: string;
+  fechaSalida: string;
+  motivoEntrada?: string;
+  observaciones?: string;
 }

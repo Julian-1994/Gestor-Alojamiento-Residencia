@@ -1,6 +1,8 @@
-<h1 class="text-center mt-2 mb-5">Panel de administracion</h1>
-<h2>Reservas</h2>
-<table>
+<h1 class="text-center mt-2 mb-5 bg-primary-subtle py-3 rounded">Panel de administracion</h1>
+<h2 class="text-center mb-3">Reservas</h2>
+<div class="table-responsive">
+<table  class="table table-bordered table-hover text-center mx-auto w-75">
+   <thead class="thead-light bg-info text-white">
   <tr>
     <th>ID</th>
     <th>Persona</th>
@@ -8,20 +10,31 @@
     <th>Habitación</th>
     <th>Entrada</th>
     <th>Salida</th>
+    <th>Motivo</th>  
+    <th>Observaciones</th>
   </tr>
+  </thead>
+
   <tr *ngFor="let reserva of reservas">
     <td>{{ reserva.id }}</td>
-    <td>{{ reserva.persona_dni }}</td>
-    <td>{{ reserva.establecimiento_id }}</td>
-    <td>{{ reserva.habitacion_id }}</td>
-    <td>{{ reserva.fecha_entrada | date }}</td>
-    <td>{{ reserva.fecha_salida | date }}</td>
+    <td>{{ reserva.persona.dni}}</td>
+    <td>{{ reserva.establecimiento.nombre }}</td>
+    <td>{{ reserva.habitacion.numero }}</td>
+    <td>{{ reserva.fechaEntrada | date }}</td>
+    <td>{{ reserva.fechaSalida | date }}</td>
+    <td>{{ reserva.motivoEntrada}}</td>
+    <td>{{ reserva.observaciones}}</td>
+
+    
   </tr>
 </table>
+</div>
 
-<h2>Personas</h2>
-<ul>
-  <li *ngFor="let persona of personas">
-    {{ persona.nombre }} {{ persona.apellidos }} - {{ persona.dni }}
+<h2 class="text-center my-4">Personas</h2>
+<ul class="list-group w-100 mx-auto">
+  <li class="list-group-item" *ngFor="let persona of personas">
+    {{ persona.nombre }} {{ persona.apellidos }} - DNI: {{ persona.dni }} -
+    Nacimiento: {{ persona.fechaNacimiento | date }} - Tel: {{ persona.telefono }} -
+    Email: {{ persona.email }}
   </li>
 </ul>

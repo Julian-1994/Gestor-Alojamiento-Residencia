@@ -32,7 +32,7 @@ public class Establecimiento {
 
 		public Establecimiento() {
 			super();
-			// TODO Auto-generated constructor stub
+		
 		}
 
 		public Establecimiento(int id, String nombre, String direccion, String telefono, int capacidad,
