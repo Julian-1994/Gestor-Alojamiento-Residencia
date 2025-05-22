@@ -21,7 +21,7 @@ public class Persona {
     @Column(nullable = false)
     private String apellidos;
     @Column(nullable = false)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date fechaNacimiento;
     @Column(nullable = false)
     private String telefono;

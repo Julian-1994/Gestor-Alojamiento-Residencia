@@ -1,5 +1,5 @@
-<h1 class="text-center bg-primary-subtle p-4 mb-5">Panel de administracion</h1>
-<h4 class="mb-5 text-center">Gestion de Residencias </h4>
+<h1 class="text-center bg-primary-subtle p-4 mb-5">Panel de administración</h1>
+<h4 class="mb-5 text-center">Gestión de Residencias</h4>
 
 <div class="d-flex justify-content-center mb-4">
   <nav class="nav nav-tabs">
@@ -359,24 +359,31 @@
 <div *ngIf="editandoEntidad" class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content p-3">
-      <h5>{{ esNuevo ? 'Añadir' : 'Editar' }} {{ entidadTipo | titlecase }}</h5>
+      <div class="modal-header">
+        <h5 class="modal-title">{{ esNuevo ? 'Añadir' : 'Editar' }} {{ entidadTipo | titlecase }}</h5>
+      </div>
 
-      <!-- Formulario dinámico según entidad -->
-      <form (ngSubmit)="guardar()" #formAdmin="ngForm">
+      <form (ngSubmit)="guardar()" #formAdmin="ngForm" class="modal-body">
 
         <!-- Reserva -->
-        <div *ngIf="entidadTipo === 'reservas'">
-          <label>ID (solo editar no nuevo)</label>
+        <ng-container *ngIf="entidadTipo === 'reservas'">
+          <label>ID (solo en edición)</label>
           <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
 
           <label>Persona DNI</label>
           <input type="text" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" class="form-control mb-2" required>
 
-           <label>Establecimiento ID</label>
-          <input type="number" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
+          <label>Establecimiento</label>
+          <select [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
+            <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
+            <option *ngFor="let est of establecimientos" [value]="est.id">{{ est.nombre }}</option>
+          </select>
 
-          <label>Habitación ID</label>
-          <input type="number" [(ngModel)]="editandoEntidad.habitacion.id" name="habitacionId" class="form-control mb-2" required>
+          <label>Habitación</label>
+          <select [(ngModel)]="editandoEntidad.habitacion.id" name="habitacionId" class="form-control mb-2" required [disabled]="!editandoEntidad.establecimiento?.id">
+            <option [ngValue]="null" disabled>Seleccione una habitación</option>
+            <option *ngFor="let hab of habitacionesFiltradas" [value]="hab.id">{{ hab.numero }}</option>
+          </select>
 
           <label>Fecha Entrada</label>
           <input type="date" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" class="form-control mb-2" required>
@@ -389,10 +396,10 @@
 
           <label>Observaciones</label>
           <textarea [(ngModel)]="editandoEntidad.observaciones" name="observaciones" class="form-control mb-2"></textarea>
-        </div>
+        </ng-container>
 
         <!-- Persona -->
-        <div *ngIf="entidadTipo === 'personas'">
+        <ng-container *ngIf="entidadTipo === 'personas'">
           <label>Nombre</label>
           <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control mb-2" required>
 
@@ -410,10 +417,10 @@
 
           <label>Email</label>
           <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2">
-        </div>
+        </ng-container>
 
         <!-- Habitación -->
-        <div *ngIf="entidadTipo === 'habitaciones'">
+        <ng-container *ngIf="entidadTipo === 'habitaciones'">
           <label>Número</label>
           <input type="text" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control mb-2" required>
 
@@ -423,12 +430,15 @@
           <label>Estado</label>
           <input type="text" [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control mb-2">
 
-          <label>Establecimiento ID</label>
-          <input type="number" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
-        </div>
+          <label>Establecimiento</label>
+          <select [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
+            <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
+            <option *ngFor="let est of establecimientos" [value]="est.id">{{ est.nombre }}</option>
+          </select>
+        </ng-container>
 
         <!-- Establecimiento -->
-        <div *ngIf="entidadTipo === 'establecimientos'">
+        <ng-container *ngIf="entidadTipo === 'establecimientos'">
           <label>Nombre</label>
           <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control mb-2" required>
 
@@ -440,10 +450,10 @@
 
           <label>Capacidad</label>
           <input type="number" [(ngModel)]="editandoEntidad.capacidad" name="capacidad" class="form-control mb-2">
-        </div>
+        </ng-container>
 
         <!-- Usuario -->
-        <div *ngIf="entidadTipo === 'usuarios'">
+        <ng-container *ngIf="entidadTipo === 'usuarios'">
           <label>Nombre de usuario</label>
           <input type="text" [(ngModel)]="editandoEntidad.nombreUsuario" name="nombreUsuario" class="form-control mb-2" required>
 
@@ -455,7 +465,7 @@
 
           <label>Email</label>
           <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2">
-        </div>
+        </ng-container>
 
         <!-- Botones -->
         <div class="mt-3 d-flex justify-content-end gap-2">

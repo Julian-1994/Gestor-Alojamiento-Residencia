@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.Gestor_Alojamiento.Model.Establecimiento;
 import com.Gestor_Alojamiento.Model.Habitacion;
+import com.Gestor_Alojamiento.Servicios.EstablecimientoServicio;
 import com.Gestor_Alojamiento.Servicios.HabitacionServicio;
 
 @RestController
@@ -22,6 +25,9 @@ public class HabitacionController {
 
 	@Autowired
     private HabitacionServicio habitacionServicio;
+
+    @Autowired
+private EstablecimientoServicio establecimientoServicio;
 
     @GetMapping
     public ResponseEntity<List<Habitacion>> getAllHabitaciones() {
@@ -37,11 +43,16 @@ public class HabitacionController {
         return ResponseEntity.ok(habitacion);
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<Habitacion> createHabitacion(@RequestBody Habitacion habitacion) {
-        Habitacion nuevaHabitacion = habitacionServicio.save(habitacion);
-        return ResponseEntity.ok(nuevaHabitacion);
-    }
+   @PostMapping(consumes = "application/json")
+public ResponseEntity<Habitacion> createHabitacion(@RequestBody Habitacion habitacion) {
+    Establecimiento est = establecimientoServicio.findById(habitacion.getEstablecimiento().getId());
+   
+    // Reasociar el objeto persistente antes de guardar
+    habitacion.setEstablecimiento(est);
+
+    Habitacion nuevaHabitacion = habitacionServicio.save(habitacion);
+    return ResponseEntity.ok(nuevaHabitacion);
+}
 
     @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Habitacion> updateHabitacion(@PathVariable int id, @RequestBody Habitacion habitacion) {

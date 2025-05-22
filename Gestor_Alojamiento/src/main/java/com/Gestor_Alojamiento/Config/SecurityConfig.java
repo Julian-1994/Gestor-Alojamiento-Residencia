@@ -31,9 +31,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF para simplificar pruebas iniciales
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/usuarios/login").permitAll() // Permitir acceso al login
-                        .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
-                        .requestMatchers("/api/personas/**").hasRole("ADMIN")
-                        .requestMatchers("/api/reservas/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/usuarios/**").hasAnyRole("ADMIN", "USUARIO")
+                        .requestMatchers("/api/personas/**").hasAnyRole("ADMIN", "USUARIO")
+                        .requestMatchers("/api/reservas/**").hasAnyRole("ADMIN", "USUARIO")
                         .anyRequest().permitAll())
                     .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));

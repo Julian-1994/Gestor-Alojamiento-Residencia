@@ -17,16 +17,26 @@ export class AdminService {
   constructor(private http: HttpClient) {}
 
   // Método para convertir fechas al formato Date
-  private convertDateToISO(date: string): Date {
-    const [day, month, year] = date.split('/');
+  private convertDateToISO(date: string): Date | null {
+    if (!date) {
+      return null;
+    }
+    const [year, month, day] = date.split('-');
     return new Date(`${year}-${month}-${day}`);
   }
 
   // Método para convertir Date a string en formato ISO
-  private dateToString(date: Date): string {
-    return date.toISOString().split('T')[0]; // Obtiene solo la parte de la fecha
+  private dateToString(date: Date | null): string {
+    if (!date) {
+      return '';
+    }
+    try {
+      return date.toISOString().split('T')[0]; // Obtiene solo la parte de la fecha
+    } catch (error) {
+      console.error('Error al convertir fecha:', error);
+      return ''; // Devuelve una cadena vacía o maneja el error de otra manera
+    }
   }
-
   // GET
   getReservas(): Observable<Reserva[]> {
     return this.http.get<Reserva[]>(`${this.baseUrl}/reservas`, { withCredentials: true }).pipe(
@@ -73,7 +83,11 @@ export class AdminService {
   }
 
   addPersona(persona: Persona): Observable<any> {
-    return this.http.post(`${this.baseUrl}/personas`, persona, {
+    const formattedPersona = {
+      ...persona,
+      fechaNacimiento: this.dateToString(this.convertDateToISO(persona.fechaNacimiento)),
+    };
+    return this.http.post(`${this.baseUrl}/personas`, formattedPersona, {
       headers: this.jsonHeaders,
       withCredentials: true
     });
@@ -114,7 +128,11 @@ export class AdminService {
   }
 
   updatePersona(dni: string, persona: Persona): Observable<any> {
-    return this.http.put(`${this.baseUrl}/personas/${dni}`, persona, {
+    const formattedPersona = {
+      ...persona,
+      fechaNacimiento: this.dateToString(this.convertDateToISO(persona.fechaNacimiento)),
+    };
+    return this.http.put(`${this.baseUrl}/personas/${dni}`, formattedPersona, {
       headers: this.jsonHeaders,
       withCredentials: true
     });

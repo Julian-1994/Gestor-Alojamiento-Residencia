@@ -16,7 +16,7 @@ public class EstablecimientoServicio {
         return establecimientoRepository.findAll();
     }
 
-    public Establecimiento findById(int id) {
+    public Establecimiento findById(Integer id) {
         return establecimientoRepository.findById(id).orElse(null);
     }
 

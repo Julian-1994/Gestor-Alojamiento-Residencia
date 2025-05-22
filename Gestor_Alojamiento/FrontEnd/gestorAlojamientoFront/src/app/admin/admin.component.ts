@@ -131,19 +131,36 @@ export class AdminComponent implements OnInit {
   agregarEntidad() {
     switch(this.entidadTipo) {
       case 'reservas':
-        this.adminService.addReserva(this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.addReserva(this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear reserva:', err); }
+        });
         break;
       case 'personas':
-        this.adminService.addPersona(this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.addPersona(this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear persona:', err); }
+        });
         break;
       case 'habitaciones':
-        this.adminService.addHabitacion(this.editandoEntidad).subscribe(() => this.postOperacion());
-        break;
+  this.editandoEntidad.establecimiento = { id: this.editandoEntidad.establecimientoId };
+  delete this.editandoEntidad.establecimientoId;
+  this.adminService.addHabitacion(this.editandoEntidad).subscribe({
+    next: () => { this.postOperacion(); },
+    error: (err) => { console.error('Error al crear habitación:', err); }
+  });
+  break;
       case 'establecimientos':
-        this.adminService.addEstablecimiento(this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.addEstablecimiento(this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear establecimiento:', err); }
+        });
         break;
       case 'usuarios':
-        this.adminService.addUsuario(this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.addUsuario(this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear usuario:', err); }
+        });
         break;
     }
   }
@@ -152,19 +169,34 @@ export class AdminComponent implements OnInit {
   actualizarEntidad() {
     switch(this.entidadTipo) {
       case 'reservas':
-        this.adminService.updateReserva(this.editandoEntidad.id, this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.updateReserva(this.editandoEntidad.id, this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al actualizar reserva:', err); }
+        });
         break;
       case 'personas':
-        this.adminService.updatePersona(this.editandoEntidad.dni, this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.updatePersona(this.editandoEntidad.dni, this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al actualizar persona:', err); }
+        });
         break;
       case 'habitaciones':
-        this.adminService.updateHabitacion(this.editandoEntidad.id, this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.updateHabitacion(this.editandoEntidad.id, this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al actualizar habitación:', err); }
+        });
         break;
       case 'establecimientos':
-        this.adminService.updateEstablecimiento(this.editandoEntidad.id, this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.updateEstablecimiento(this.editandoEntidad.id, this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al actualizar establecimiento:', err); }
+        });
         break;
       case 'usuarios':
-        this.adminService.updateUsuario(this.editandoEntidad.id, this.editandoEntidad).subscribe(() => this.postOperacion());
+        this.adminService.updateUsuario(this.editandoEntidad.id, this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al actualizar usuario:', err); }
+        });
         break;
     }
   }
@@ -174,19 +206,34 @@ export class AdminComponent implements OnInit {
     if(!confirm('¿Seguro que deseas eliminar este elemento?')) return;
     switch(tipo) {
       case 'reservas':
-        this.adminService.deleteReserva(entidad.id).subscribe(() => this.postOperacion());
+        this.adminService.deleteReserva(entidad.id).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al eliminar reserva:', err); }
+        });
         break;
       case 'personas':
-        this.adminService.deletePersona(entidad.dni).subscribe(() => this.postOperacion());
+        this.adminService.deletePersona(entidad.dni).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al eliminar persona:', err); }
+        });
         break;
       case 'habitaciones':
-        this.adminService.deleteHabitacion(entidad.id).subscribe(() => this.postOperacion());
+        this.adminService.deleteHabitacion(entidad.id).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al eliminar habitación:', err); }
+        });
         break;
       case 'establecimientos':
-        this.adminService.deleteEstablecimiento(entidad.id).subscribe(() => this.postOperacion());
+        this.adminService.deleteEstablecimiento(entidad.id).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al eliminar establecimiento:', err); }
+        });
         break;
       case 'usuarios':
-        this.adminService.deleteUsuario(entidad.id).subscribe(() => this.postOperacion());
+        this.adminService.deleteUsuario(entidad.id).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al eliminar usuario:', err); }
+        });
         break;
     }
   }
