@@ -37,13 +37,13 @@ public class HabitacionController {
         return ResponseEntity.ok(habitacion);
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<Habitacion> createHabitacion(@RequestBody Habitacion habitacion) {
         Habitacion nuevaHabitacion = habitacionServicio.save(habitacion);
         return ResponseEntity.ok(nuevaHabitacion);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Habitacion> updateHabitacion(@PathVariable int id, @RequestBody Habitacion habitacion) {
         if (!habitacionServicio.existsById(id)) {
             return ResponseEntity.notFound().build();

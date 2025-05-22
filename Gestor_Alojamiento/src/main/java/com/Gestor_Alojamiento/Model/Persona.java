@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import java.util.Date;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Persona {
@@ -19,13 +21,14 @@ public class Persona {
     @Column(nullable = false)
     private String apellidos;
     @Column(nullable = false)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date fechaNacimiento;
     @Column(nullable = false)
     private String telefono;
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonIgnore
+	@JsonBackReference
     @OneToMany(mappedBy = "persona")
     private List<Reserva> reservas;
 

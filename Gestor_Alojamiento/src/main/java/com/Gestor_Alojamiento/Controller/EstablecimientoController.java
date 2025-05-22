@@ -27,7 +27,7 @@ public class EstablecimientoController {
 	        return establecimientoServicio.findAll();
 	    }
 
-	    @GetMapping("establecimientos/{id}")
+	    @GetMapping("{id}")
 	    public ResponseEntity<Establecimiento> getEstablecimientoById(@PathVariable int id) {
 	        Establecimiento establecimiento = establecimientoServicio.findById(id);
 	        if (establecimiento == null) {
@@ -37,13 +37,13 @@ public class EstablecimientoController {
 	    }
 
 
-	    @PostMapping
+	    @PostMapping (consumes = "application/json")
 	    public ResponseEntity<Establecimiento> createEstablecimiento(@RequestBody Establecimiento establecimiento) {
 	        Establecimiento nuevoEstablecimiento = establecimientoServicio.save(establecimiento);
 	        return ResponseEntity.ok(nuevoEstablecimiento);
 	    }
 
-	    @PutMapping("/{id}")
+	    @PutMapping (value = "/{id}", consumes = "application/json")
 	    public ResponseEntity<Establecimiento> updateEstablecimiento(@PathVariable int id, @RequestBody Establecimiento establecimiento) {
 	        if (!establecimientoServicio.existsById(id)) {
 	            return ResponseEntity.notFound().build();

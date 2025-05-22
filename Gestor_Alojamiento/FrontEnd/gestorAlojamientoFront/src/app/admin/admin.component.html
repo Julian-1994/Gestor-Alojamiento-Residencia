@@ -10,167 +10,349 @@
     <a class="nav-link" [class.active]="mostrarUsuarios" (click)="mostrarEntidad('usuarios')">Usuarios</a>
   </nav>
 </div>
+
 <!-- Tabla Reservas -->
 <div *ngIf="mostrarReservas" class="mb-5">
   <h2 class="text-center">Reservas</h2>
   <button class="btn btn-success mb-3" (click)="abrirNuevo('reservas')">Añadir Reserva</button>
-  <table class="table table-bordered text-center">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th>
-        <th>Persona DNI</th>
-        <th>Establecimiento ID</th>
-        <th>Habitación ID</th>
-        <th>Fecha Entrada</th>
-        <th>Fecha Salida</th>
-        <th>Motivo Entrada</th>
-        <th>Observaciones</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let r of reservas">
-        <td>{{ r.id }}</td>
-        <td>{{ r.persona.dni }}</td>
-        <td>{{ r.establecimiento.id }}</td>
-        <td>{{ r.habitacion.id }}</td>
-        <td>{{ r.fechaEntrada | date }}</td>
-        <td>{{ r.fechaSalida | date }}</td>
-        <td>{{ r.motivoEntrada }}</td>
-        <td>{{ r.observaciones }}</td>
-        <td>
-          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('reservas', r)">Editar</button>
-          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('reservas', r)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+  <!-- Filtros -->
+  <div class="row g-2 mb-3">
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroReservas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroReservas()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroReservas.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroReservas()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" type="date" [(ngModel)]="filtroReservas.fechaDesde" (change)="aplicarFiltroReservas()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" type="date" [(ngModel)]="filtroReservas.fechaHasta" (change)="aplicarFiltroReservas()">
+    </div>
+  </div>
+
+  <!-- Tabla o mensaje -->
+  <div *ngIf="reservasFiltradas.length > 0 || !buscandoReservas; else sinResultadosReservas">
+    <table class="table table-bordered text-center">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Persona DNI</th>
+          <th>Establecimiento ID</th>
+          <th>Habitación ID</th>
+          <th>Fecha Entrada</th>
+          <th>Fecha Salida</th>
+          <th>Motivo Entrada</th>
+          <th>Observaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of reservasFiltradas">
+          <td>{{ r.id }}</td>
+          <td>{{ r.persona.dni }}</td>
+          <td>{{ r.establecimiento.id }}</td>
+          <td>{{ r.habitacion.id }}</td>
+          <td>{{ r.fechaEntrada | date:'yyyy/MM/dd' }}</td>
+          <td>{{ r.fechaSalida | date:'yyyy/MM/dd' }}</td>
+          <td>{{ r.motivoEntrada }}</td>
+          <td>{{ r.observaciones }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('reservas', r)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('reservas', r)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje si no hay resultados -->
+  <ng-template #sinResultadosReservas>
+    <div class="alert alert-warning text-center">
+      No se encontraron reservas con esos criterios.
+      <button class="btn btn-link" (click)="resetearFiltrosReservas()">Ver todo</button>
+    </div>
+  </ng-template>
 </div>
 
 <!-- Tabla Personas -->
 <div *ngIf="mostrarPersonas" class="mb-5">
   <h2 class="text-center">Personas</h2>
   <button class="btn btn-success mb-3" (click)="abrirNuevo('personas')">Añadir Persona</button>
-  <table class="table table-bordered text-center">
-    <thead class="table-light">
-      <tr>
-        <th>Nombre</th>
-        <th>Apellidos</th>
-        <th>DNI</th>
-        <th>Fecha Nacimiento</th>
-        <th>Teléfono</th>
-        <th>Email</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let p of personas">
-        <td>{{ p.nombre }}</td>
-        <td>{{ p.apellidos }}</td>
-        <td>{{ p.dni }}</td>
-        <td>{{ p.fechaNacimiento | date }}</td>
-        <td>{{ p.telefono }}</td>
-        <td>{{ p.email }}</td>
-        <td>
-          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('personas', p)">Editar</button>
-          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('personas', p)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+  <!-- Filtros -->
+  <div class="row g-2 mb-3">
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroPersonas.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroPersonas()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroPersonas.apellidos" placeholder="Buscar por apellidos" (input)="aplicarFiltroPersonas()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroPersonas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroPersonas()">
+    </div>
+  </div>
+
+  <!-- Tabla o mensaje -->
+  <div *ngIf="personasFiltradas.length > 0 || !buscandoPersonas; else sinResultadosPersonas">
+    <table class="table table-bordered text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>DNI</th>
+          <th>Fecha Nacimiento</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of personasFiltradas">
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.apellidos }}</td>
+          <td>{{ p.dni }}</td>
+          <td>{{ p.fechaNacimiento | date:'dd/MM/yyyy' }}</td>
+          <td>{{ p.telefono }}</td>
+          <td>{{ p.email }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('personas', p)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('personas', p)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje si no hay resultados -->
+  <ng-template #sinResultadosPersonas>
+    <div class="alert alert-warning text-center">
+      No se encontraron personas con esos criterios.
+      <button class="btn btn-link" (click)="resetearFiltrosPersonas()">Ver todo</button>
+    </div>
+  </ng-template>
 </div>
 
 <!-- Tabla Habitaciones -->
 <div *ngIf="mostrarHabitaciones" class="mb-5">
   <h2 class="text-center mb-3">Habitaciones</h2>
   <button class="btn btn-success mb-2" (click)="abrirNuevo('habitaciones')">Añadir Habitación</button>
-  <table class="table table-bordered text-center">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th>
-        <th>Número</th>
-        <th>Tipo</th>
-        <th>Estado</th>
-        <th>Establecimiento ID</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let h of habitaciones">
-        <td>{{ h.id }}</td>
-        <td>{{ h.numero }}</td>
-        <td>{{ h.tipo }}</td>
-        <td>{{ h.estado }}</td>
-        <td>{{ h.establecimiento.id }}</td>
-        <td>
-          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('habitaciones', h)">Editar</button>
-          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('habitaciones', h)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+  <!-- Filtros -->
+  <div class="row g-2 mb-3">
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroHabitaciones.numero" placeholder="Buscar por número" (input)="aplicarFiltroHabitaciones()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroHabitaciones.tipo" placeholder="Buscar por tipo" (input)="aplicarFiltroHabitaciones()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroHabitaciones.estado" placeholder="Buscar por estado" (input)="aplicarFiltroHabitaciones()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroHabitaciones.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroHabitaciones()">
+    </div>
+  </div>
+
+  <!-- Ver disponibilidad -->
+  <div class="mb-4 border p-3 rounded bg-light text-center">
+    <h5 class="mb-3">Ver disponibilidad de habitaciones por fecha</h5>
+    <div class="d-flex justify-content-center align-items-end gap-3 flex-wrap">
+      <div>
+        <label>Fecha Entrada</label>
+        <input type="date" class="form-control" [(ngModel)]="fechaDisponibilidadInicio">
+      </div>
+      <div>
+        <label>Fecha Salida</label>
+        <input type="date" class="form-control" [(ngModel)]="fechaDisponibilidadFin">
+      </div>
+      <div>
+        <button class="btn btn-primary" (click)="verDisponibilidadHabitaciones()" [disabled]="!fechaDisponibilidadInicio || !fechaDisponibilidadFin">
+          Ver Disponibilidad
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de disponibilidad -->
+  <div *ngIf="habitacionesDisponibilidad.length > 0" class="mt-4">
+    <h5>Estado de habitaciones entre {{ fechaDisponibilidadInicio }} y {{ fechaDisponibilidadFin }}</h5>
+    <table class="table table-bordered text-center">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Número</th>
+          <th>Tipo</th>
+          <th>Estado Actual</th>
+          <th>Establecimiento ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let h of habitacionesDisponibilidad">
+          <td>{{ h.id }}</td>
+          <td>{{ h.numero }}</td>
+          <td>{{ h.tipo }}</td>
+          <td [ngClass]="{ 'text-success': h.estadoActual === 'Disponible', 'text-danger': h.estadoActual === 'Ocupada' }">
+            {{ h.estadoActual }}
+          </td>
+          <td>{{ h.establecimiento.id }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tabla principal o mensaje -->
+  <div *ngIf="habitacionesFiltradas.length > 0 || !buscandoHabitaciones; else sinResultadosHabitaciones">
+    <table class="table table-bordered text-center">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Número</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Establecimiento ID</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let h of habitacionesFiltradas">
+          <td>{{ h.id }}</td>
+          <td>{{ h.numero }}</td>
+          <td>{{ h.tipo }}</td>
+          <td>{{ h.estado }}</td>
+          <td>{{ h.establecimiento.id }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('habitaciones', h)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('habitaciones', h)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje si no hay resultados -->
+  <ng-template #sinResultadosHabitaciones>
+    <div class="alert alert-warning text-center">
+      No se encontraron habitaciones con esos criterios.
+      <button class="btn btn-link" (click)="resetearFiltrosHabitaciones()">Ver todo</button>
+    </div>
+  </ng-template>
 </div>
 
 <!-- Tabla Establecimientos -->
 <div *ngIf="mostrarEstablecimientos" class="mb-5">
   <h2 class="text-center">Establecimientos</h2>
   <button class="btn btn-success mb-3" (click)="abrirNuevo('establecimientos')">Añadir Establecimiento</button>
-  <table class="table table-bordered text-center">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Dirección</th>
-        <th>Teléfono</th>
-        <th>Capacidad</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let e of establecimientos">
-        <td>{{ e.id }}</td>
-        <td>{{ e.nombre }}</td>
-        <td>{{ e.direccion }}</td>
-        <td>{{ e.telefono }}</td>
-        <td>{{ e.capacidad }}</td>
-        <td>
-          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('establecimientos', e)">Editar</button>
-          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('establecimientos', e)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+  <!-- Filtros -->
+  <div class="row g-2 mb-3">
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroEstablecimientos.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroEstablecimientos()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroEstablecimientos.direccion" placeholder="Buscar por dirección" (input)="aplicarFiltroEstablecimientos()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroEstablecimientos.telefono" placeholder="Buscar por teléfono" (input)="aplicarFiltroEstablecimientos()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroEstablecimientos.capacidad" placeholder="Buscar por capacidad" (input)="aplicarFiltroEstablecimientos()">
+    </div>
+  </div>
+
+  <!-- Tabla o mensaje -->
+  <div *ngIf="establecimientosFiltrados.length > 0 || !buscandoEstablecimientos; else sinResultadosEstablecimientos">
+    <table class="table table-bordered text-center">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Capacidad</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of establecimientosFiltrados">
+          <td>{{ e.id }}</td>
+          <td>{{ e.nombre }}</td>
+          <td>{{ e.direccion }}</td>
+          <td>{{ e.telefono }}</td>
+          <td>{{ e.capacidad }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('establecimientos', e)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('establecimientos', e)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje si no hay resultados -->
+  <ng-template #sinResultadosEstablecimientos>
+    <div class="alert alert-warning text-center">
+      No se encontraron establecimientos con esos criterios.
+      <button class="btn btn-link" (click)="resetearFiltrosEstablecimientos()">Ver todo</button>
+    </div>
+  </ng-template>
 </div>
 
 <!-- Tabla Usuarios -->
 <div *ngIf="mostrarUsuarios" class="mb-5">
   <h2 class="text-center">Usuarios</h2>
   <button class="btn btn-success mb-3" (click)="abrirNuevo('usuarios')">Añadir Usuario</button>
-  <table class="table table-bordered text-center">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th>
-        <th>Nombre de usuario</th>
-        <th>Contraseña</th>
-        <th>Rol</th>
-        <th>Email</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let u of usuarios">
-        <td>{{ u.id }}</td>
-        <td>{{ u.nombreUsuario }}</td>
-        <td>{{u.contrasenya}}</td>
-        <td>{{ u.rol }}</td>
-        <td>{{ u.email }}</td>
-        <td>
-          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('usuarios', u)">Editar</button>
-          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('usuarios', u)">Eliminar</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+  <!-- Filtros -->
+  <div class="row g-2 mb-3">
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroUsuarios.nombreUsuario" placeholder="Buscar por nombre de usuario" (input)="aplicarFiltroUsuarios()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroUsuarios.rol" placeholder="Buscar por rol" (input)="aplicarFiltroUsuarios()">
+    </div>
+    <div class="col-md">
+      <input class="form-control" [(ngModel)]="filtroUsuarios.email" placeholder="Buscar por email" (input)="aplicarFiltroUsuarios()">
+    </div>
+  </div>
+
+  <!-- Tabla o mensaje -->
+  <div *ngIf="usuariosFiltrados.length > 0 || !buscandoUsuarios; else sinResultadosUsuarios">
+    <table class="table table-bordered text-center">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Nombre de usuario</th>
+          <th>Contraseña</th>
+          <th>Rol</th>
+          <th>Email</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuariosFiltrados">
+          <td>{{ u.id }}</td>
+          <td>{{ u.nombreUsuario }}</td>
+          <td>{{ u.contrasenya }}</td>
+          <td>{{ u.rol }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('usuarios', u)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('usuarios', u)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje si no hay resultados -->
+  <ng-template #sinResultadosUsuarios>
+    <div class="alert alert-warning text-center">
+      No se encontraron usuarios con esos criterios.
+      <button class="btn btn-link" (click)="resetearFiltrosUsuarios()">Ver todo</button>
+    </div>
+  </ng-template>
 </div>
 
 <!-- Modal para formulario Añadir/Editar -->
@@ -190,7 +372,7 @@
           <label>Persona DNI</label>
           <input type="text" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" class="form-control mb-2" required>
 
-          <label>Establecimiento ID</label>
+           <label>Establecimiento ID</label>
           <input type="number" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
 
           <label>Habitación ID</label>
@@ -203,7 +385,7 @@
           <input type="date" [(ngModel)]="editandoEntidad.fechaSalida" name="fechaSalida" class="form-control mb-2" required>
 
           <label>Motivo Entrada</label>
-          <input type="text" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada" class="form-control mb-2">
 
           <label>Observaciones</label>
           <textarea [(ngModel)]="editandoEntidad.observaciones" name="observaciones" class="form-control mb-2"></textarea>
@@ -218,31 +400,28 @@
           <input type="text" [(ngModel)]="editandoEntidad.apellidos" name="apellidos" class="form-control mb-2" required>
 
           <label>DNI</label>
-          <input type="text" [(ngModel)]="editandoEntidad.dni" name="dni" [readonly]="!esNuevo" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.dni" name="dni" class="form-control mb-2" required>
 
-          <label>Fecha de nacimiento</label>
-          <input type="date" [(ngModel)]="editandoEntidad.fechaNacimiento" name="fechaNacimiento" class="form-control mb-2" required>
+          <label>Fecha Nacimiento</label>
+          <input type="date" [(ngModel)]="editandoEntidad.fechaNacimiento" name="fechaNacimiento" class="form-control mb-2">
 
           <label>Teléfono</label>
-          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2">
 
           <label>Email</label>
-          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2" required>
+          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2">
         </div>
 
-        <!-- Habitacion -->
+        <!-- Habitación -->
         <div *ngIf="entidadTipo === 'habitaciones'">
-          <label>ID (solo editar no nuevo)</label>
-          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
-
           <label>Número</label>
-          <input type="number" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control mb-2" required>
 
           <label>Tipo</label>
           <input type="text" [(ngModel)]="editandoEntidad.tipo" name="tipo" class="form-control mb-2" required>
 
           <label>Estado</label>
-          <input type="text" [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control mb-2">
 
           <label>Establecimiento ID</label>
           <input type="number" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
@@ -250,40 +429,38 @@
 
         <!-- Establecimiento -->
         <div *ngIf="entidadTipo === 'establecimientos'">
-          <label>ID (solo editar no nuevo)</label>
-          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
-
           <label>Nombre</label>
           <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control mb-2" required>
 
           <label>Dirección</label>
-          <input type="text" [(ngModel)]="editandoEntidad.direccion" name="direccion" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.direccion" name="direccion" class="form-control mb-2">
 
           <label>Teléfono</label>
-          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2">
 
           <label>Capacidad</label>
-          <input type="number" [(ngModel)]="editandoEntidad.capacidad" name="capacidad" class="form-control mb-2" required>
+          <input type="number" [(ngModel)]="editandoEntidad.capacidad" name="capacidad" class="form-control mb-2">
         </div>
 
         <!-- Usuario -->
         <div *ngIf="entidadTipo === 'usuarios'">
-          <label>ID (solo editar no nuevo)</label>
-          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
-
           <label>Nombre de usuario</label>
-          <input type="text" [(ngModel)]="editandoEntidad.username" name="username" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.nombreUsuario" name="nombreUsuario" class="form-control mb-2" required>
+
+          <label>Contraseña</label>
+          <input type="password" [(ngModel)]="editandoEntidad.contrasenya" name="contrasenya" class="form-control mb-2" required>
 
           <label>Rol</label>
-          <input type="text" [(ngModel)]="editandoEntidad.role" name="role" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.rol" name="rol" class="form-control mb-2">
 
           <label>Email</label>
-          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2" required>
+          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2">
         </div>
 
-        <div class="d-flex justify-content-end mt-3">
-          <button type="button" class="btn btn-secondary me-2" (click)="cancelar()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="formAdmin.invalid">{{ esNuevo ? 'Añadir' : 'Guardar' }}</button>
+        <!-- Botones -->
+        <div class="mt-3 d-flex justify-content-end gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="formAdmin.invalid">Guardar</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
         </div>
       </form>
     </div>

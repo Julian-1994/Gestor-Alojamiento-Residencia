@@ -7,7 +7,7 @@ export interface Reserva {
   persona: Persona;
   establecimiento: Establecimiento;
   habitacion: Habitacion;
-  fechaEntrada: string;
+  fechaEntrada:string;
   fechaSalida: string;
   motivoEntrada?: string;
   observaciones?: string;

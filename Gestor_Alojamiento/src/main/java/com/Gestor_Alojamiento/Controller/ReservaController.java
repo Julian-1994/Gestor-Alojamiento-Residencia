@@ -2,6 +2,7 @@ package com.Gestor_Alojamiento.Controller;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,16 +39,20 @@ public class ReservaController {
         return ResponseEntity.ok(reserva);
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<Reserva> createReserva(@RequestBody Reserva reserva) {
         if (reserva.getFechaEntrada().after(reserva.getFechaSalida())) {
             return ResponseEntity.badRequest().body(null);
         }
-        Reserva nuevaReserva = reservaServicio.save(reserva);
-        return ResponseEntity.ok(nuevaReserva);
+        try {
+            Reserva nuevaReserva = reservaServicio.save(reserva);
+            return ResponseEntity.ok(nuevaReserva);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Reserva> updateReserva(@PathVariable int id, @RequestBody Reserva reserva) {
         if (!reservaServicio.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -56,9 +61,14 @@ public class ReservaController {
             return ResponseEntity.badRequest().body(null);
         }
         reserva.setId(id);
-        Reserva actualizadaReserva = reservaServicio.save(reserva);
-        return ResponseEntity.ok(actualizadaReserva);
+        try {
+            Reserva actualizadaReserva = reservaServicio.save(reserva);
+            return ResponseEntity.ok(actualizadaReserva);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReserva(@PathVariable int id) {

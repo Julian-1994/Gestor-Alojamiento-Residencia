@@ -36,14 +36,14 @@ public class PersonaController {
 	        return ResponseEntity.ok(persona);
 	    }
 
-	    @PostMapping
+	    @PostMapping (consumes = "application/json")
 	    public ResponseEntity<Persona> createPersona(@RequestBody Persona persona) {
 	        Persona nuevaPersona = personaServicio.save(persona);
 	        return ResponseEntity.ok(nuevaPersona);
 	    }
 
 
-	    @PutMapping("/{dni}")
+	    @PutMapping (value = "/{dni}", consumes = "application/json")
 	    public ResponseEntity<Persona> updatePersona(@PathVariable String dni, @RequestBody Persona persona) {
 	        if (!personaServicio.existsById(dni)) {
 	            return ResponseEntity.notFound().build();

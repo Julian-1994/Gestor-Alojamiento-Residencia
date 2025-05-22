@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToOne;
 import java.util.Date;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -36,8 +37,10 @@ public class Reserva {
 	    private Habitacion habitacion;
 
 	    @Column(nullable = false)
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 	    private Date fechaEntrada;
 	    @Column(nullable = false)
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
 	    private Date fechaSalida;
 	    private String motivoEntrada;
 	    private String observaciones;

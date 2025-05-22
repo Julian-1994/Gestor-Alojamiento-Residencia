@@ -53,13 +53,13 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
-    @PostMapping
+    @PostMapping (consumes = "application/json")
     public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
         Usuario nuevoUsuario = usuarioServicio.save(usuario);
         return ResponseEntity.ok(nuevoUsuario);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping (value = "/{id}", consumes = "application/json")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable int id, @RequestBody Usuario usuario) {
         if (!usuarioServicio.existsById(id)) {
             return ResponseEntity.notFound().build();
