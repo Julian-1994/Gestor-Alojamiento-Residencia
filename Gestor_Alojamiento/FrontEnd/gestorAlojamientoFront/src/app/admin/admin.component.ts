@@ -58,6 +58,9 @@ export class AdminComponent implements OnInit {
   habitacionesFiltradas: Habitacion[] = [];
   establecimientosFiltrados: Establecimiento[] = [];
   usuariosFiltrados: Usuario[] = [];
+  
+  cargandoEstablecimientos = true;
+
 
   constructor(private adminService: AdminService) {}
 
@@ -79,12 +82,12 @@ export class AdminComponent implements OnInit {
       error: (err) => { console.error('Error al cargar habitaciones:', err); }
     });
     this.adminService.getEstablecimientos().subscribe({
-      next: (data) => { this.establecimientos = data; this.establecimientosFiltrados = data; },
+      next: (data) => { this.establecimientos = data; this.establecimientosFiltrados = data; this.cargandoEstablecimientos = false; },
       error: (err) => { console.error('Error al cargar establecimientos:', err); }
     });
     this.adminService.getUsuarios().subscribe({
       next: (data) => { this.usuarios = data; this.usuariosFiltrados = data; },
-      error: (err) => { console.error('Error al cargar usuarios:', err); }
+      error: (err) => { console.error('Error al cargar usuarios:', err); this.cargandoEstablecimientos = false;}
     });
   }
 
@@ -108,7 +111,11 @@ export class AdminComponent implements OnInit {
   abrirNuevo(tipo: string) {
     this.entidadTipo = tipo;
     this.esNuevo = true;
-    this.editandoEntidad = {}; // objeto vacío para rellenar
+    this.editandoEntidad = {    persona: this.personas[0], // Asignar la persona adecuada
+      establecimiento: this.habitaciones[0].establecimiento,
+      habitacion: this.habitaciones[0],
+  
+    }; // objeto vacío para rellenar
   }
 
   // Abrir formulario para editar
@@ -116,10 +123,17 @@ export class AdminComponent implements OnInit {
     this.entidadTipo = tipo;
     this.esNuevo = false;
     this.editandoEntidad = { ...entidad }; // clonar objeto para no editar original directo
-    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones') {
+    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones'|| this.entidadTipo === 'personas') {
     if (!this.editandoEntidad.establecimiento) {
       this.editandoEntidad.establecimiento = {};
     }
+    if(!this.editandoEntidad.habitacion){
+      this.editandoEntidad.habitacion = {};
+    }
+    if(!this.editandoEntidad.persona){
+      this.editandoEntidad.persona = {};
+    }
+    
   }
 }
 
@@ -128,10 +142,16 @@ export class AdminComponent implements OnInit {
   // Guardar cambios (añadir o editar)
   guardar() {
     if (this.esNuevo) {
-    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones') {
-      if (!this.editandoEntidad.establecimiento) {
-        this.editandoEntidad.establecimiento = {};
-      }
+    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones'|| this.entidadTipo === 'personas') {
+    if (!this.editandoEntidad.establecimiento) {
+      this.editandoEntidad.establecimiento = {};
+    }
+    if(!this.editandoEntidad.habitacion){
+      this.editandoEntidad.habitacion = {};
+    }
+    if(!this.editandoEntidad.persona){
+      this.editandoEntidad.persona = {};
+    }
     }
     this.agregarEntidad();
   } else {

@@ -363,7 +363,12 @@
         <h5 class="modal-title">{{ esNuevo ? 'Añadir' : 'Editar' }} {{ entidadTipo | titlecase }}</h5>
       </div>
 
-      <form (ngSubmit)="guardar()" #formAdmin="ngForm" class="modal-body">
+            <!-- Indicador de carga -->
+      <div *ngIf="cargandoEstablecimientos" class="modal-body">
+        <p>Cargando establecimientos...</p>
+      </div>
+
+      <form *ngIf="!cargandoEstablecimientos" (ngSubmit)="guardar()" #formAdmin="ngForm" class="modal-body">
 
         <!-- Reserva -->
         <ng-container *ngIf="entidadTipo === 'reservas'">
@@ -373,17 +378,18 @@
           <label>Persona DNI</label>
           <input type="text" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" class="form-control mb-2" required>
 
-          <label>Establecimiento</label>
-          <select [(ngModel)]="editandoEntidad.establecimiento" name="establecimientoId" class="form-control mb-2" required>
-            <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
-            <option *ngFor="let est of establecimientos">{{ est.nombre }}</option>
-          </select>
+           <label>Establecimiento ID</label>
+        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" required>
+                   <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
+          <option *ngFor="let establecimiento of establecimientos" [value]="establecimiento.id">{{ establecimiento.id }}</option>
+        </select>
 
-          <label>Habitación</label>
-          <select [(ngModel)]="editandoEntidad.habitacion.id" name="habitacionId" class="form-control mb-2" required [disabled]="!editandoEntidad.establecimiento?.id">
-            <option [ngValue]="null" disabled>Seleccione una habitación</option>
-            <option *ngFor="let hab of habitacionesFiltradas" [value]="hab.id">{{ hab.numero }}</option>
-          </select>
+        <label>Habitación ID</label>
+        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.habitacion.id" name="habitacionId" required>
+                   <option [ngValue]="null" disabled>Seleccione una habitacion</option>
+          <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">{{ habitacion.id }}</option>
+        </select>
+
 
           <label>Fecha Entrada</label>
           <input type="date" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" class="form-control mb-2" required>
