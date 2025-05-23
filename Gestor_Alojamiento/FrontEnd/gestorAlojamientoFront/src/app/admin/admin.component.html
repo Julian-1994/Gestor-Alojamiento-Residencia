@@ -372,9 +372,12 @@
 
         <!-- Reserva -->
         <ng-container *ngIf="entidadTipo === 'reservas'">
-          <label>ID (solo en edición)</label>
-          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" [readonly]="!esNuevo" class="form-control mb-2" required>
-
+      
+          <div *ngIf="!esNuevo"> <!-- Solo si es actualizar -->
+          <label>ID</label>
+          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" class="form-control mb-2" readonly>
+          </div>
+        
           <label>Persona DNI</label>
           <input type="text" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" class="form-control mb-2" required>
 
