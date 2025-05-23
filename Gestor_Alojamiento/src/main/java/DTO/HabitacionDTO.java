@@ -1,0 +1,39 @@
+package DTO;
+
+public class HabitacionDTO {
+    private int id;
+    private String numero;
+    private String tipo;
+    private String estado; // puedes usar String para el enum o EstadoHabitacion si quieres
+
+    // Referencia simplificada al Establecimiento: solo el id o nombre
+    private int establecimientoId;
+   
+
+    public HabitacionDTO() {}
+
+    public HabitacionDTO(int id, String numero, String tipo, String estado, int establecimientoId, String establecimientoNombre) {
+        this.id = id;
+        this.numero = numero;
+        this.tipo = tipo;
+        this.estado = estado;
+        this.establecimientoId = establecimientoId;
+   
+    }
+
+    // Getters y setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getNumero() { return numero; }
+    public void setNumero(String numero) { this.numero = numero; }
+
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public int getEstablecimientoId() { return establecimientoId; }
+    public void setEstablecimientoId(int establecimientoId) { this.establecimientoId = establecimientoId; }
+ }

@@ -29,7 +29,7 @@ public class Habitacion {
 	    @Column(nullable = false)
 	    private EstadoHabitacion estado;
 
-	    @ManyToOne
+	    @ManyToOne 
 	    @JsonIgnoreProperties("habitaciones")
 	    private Establecimiento establecimiento;
 	    

@@ -374,9 +374,9 @@
           <input type="text" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" class="form-control mb-2" required>
 
           <label>Establecimiento</label>
-          <select [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
+          <select [(ngModel)]="editandoEntidad.establecimiento" name="establecimientoId" class="form-control mb-2" required>
             <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
-            <option *ngFor="let est of establecimientos" [value]="est.id">{{ est.nombre }}</option>
+            <option *ngFor="let est of establecimientos">{{ est.nombre }}</option>
           </select>
 
           <label>Habitación</label>
@@ -421,6 +421,7 @@
 
         <!-- Habitación -->
         <ng-container *ngIf="entidadTipo === 'habitaciones'">
+
           <label>Número</label>
           <input type="text" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control mb-2" required>
 

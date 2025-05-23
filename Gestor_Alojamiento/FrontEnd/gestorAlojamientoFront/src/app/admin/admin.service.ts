@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Reserva } from '../model/reserva.model';
 import { Persona } from '../model/persona.model';
 import { Habitacion } from '../model/habitacion.model';
@@ -37,6 +38,7 @@ export class AdminService {
       return ''; // Devuelve una cadena vacía o maneja el error de otra manera
     }
   }
+
   // GET
   getReservas(): Observable<Reserva[]> {
     return this.http.get<Reserva[]>(`${this.baseUrl}/reservas`, { withCredentials: true }).pipe(
@@ -178,5 +180,10 @@ export class AdminService {
 
   deleteUsuario(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/usuarios/${id}`, { withCredentials: true });
+  }
+
+  // GET Habitaciones Disponibles
+  getHabitacionesDisponibles(fechaEntrada: string, fechaSalida: string): Observable<Habitacion[]> {
+    return this.http.get<Habitacion[]>(`${this.baseUrl}/habitaciones/disponibles?}`, { withCredentials: true });
   }
 }

@@ -116,16 +116,28 @@ export class AdminComponent implements OnInit {
     this.entidadTipo = tipo;
     this.esNuevo = false;
     this.editandoEntidad = { ...entidad }; // clonar objeto para no editar original directo
+    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones') {
+    if (!this.editandoEntidad.establecimiento) {
+      this.editandoEntidad.establecimiento = {};
+    }
   }
+}
+
+
 
   // Guardar cambios (añadir o editar)
   guardar() {
     if (this.esNuevo) {
-      this.agregarEntidad();
-    } else {
-      this.actualizarEntidad();
+    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones') {
+      if (!this.editandoEntidad.establecimiento) {
+        this.editandoEntidad.establecimiento = {};
+      }
     }
+    this.agregarEntidad();
+  } else {
+    this.actualizarEntidad();
   }
+}
 
   // Añadir entidad usando AdminService
   agregarEntidad() {
@@ -143,11 +155,9 @@ export class AdminComponent implements OnInit {
         });
         break;
       case 'habitaciones':
-  this.editandoEntidad.establecimiento = { id: this.editandoEntidad.establecimientoId };
-  delete this.editandoEntidad.establecimientoId;
-  this.adminService.addHabitacion(this.editandoEntidad).subscribe({
-    next: () => { this.postOperacion(); },
-    error: (err) => { console.error('Error al crear habitación:', err); }
+        this.adminService.addHabitacion(this.editandoEntidad).subscribe({
+        next: () => { this.postOperacion(); },
+        error: (err) => { console.error('Error al crear habitación:', err); }
   });
   break;
       case 'establecimientos':

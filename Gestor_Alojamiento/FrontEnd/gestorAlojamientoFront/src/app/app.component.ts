@@ -12,5 +12,5 @@ export class AppComponent {
   title(title: any) {
     throw new Error('Method not implemented.');
   }
-  // No necesitas lógica aquí, solo el router-outlet en el template
+
 }

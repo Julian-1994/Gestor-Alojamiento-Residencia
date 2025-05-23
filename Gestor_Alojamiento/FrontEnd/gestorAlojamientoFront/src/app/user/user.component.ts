@@ -18,6 +18,7 @@ export class UserComponent implements OnInit {
   reservas: Reserva[] = [];
   personas: Persona[] = [];
   habitaciones: Habitacion[] = [];
+  establecimientos: any[] = [];
   fechaDisponibilidadInicio: string = '';
   fechaDisponibilidadFin: string = '';
   habitacionesDisponibilidad: Habitacion[] = [];
@@ -26,6 +27,7 @@ export class UserComponent implements OnInit {
   buscandoReservas = false;
   editandoEntidad: Reserva | null = null;
   esNuevo: boolean = false;
+  mostrarCalendario: boolean = false;
 
   constructor(private adminService: AdminService) {}
 
@@ -43,7 +45,10 @@ export class UserComponent implements OnInit {
       error: (err) => { console.error('Error al cargar personas:', err); }
     });
     this.adminService.getHabitaciones().subscribe({
-      next: (data) => { this.habitaciones = data; },
+      next: (data) => { 
+        this.habitaciones = data; 
+        this.establecimientos = [...new Set(data.map(h => h.establecimiento))]; // Obtener establecimientos únicos
+      },
       error: (err) => { console.error('Error al cargar habitaciones:', err); }
     });
   }
@@ -92,6 +97,34 @@ export class UserComponent implements OnInit {
       motivoEntrada: '',
       observaciones: ''
     };
+  }
+
+  abrirCalendario() {
+    this.mostrarCalendario = true;
+  }
+
+  cerrarCalendario() {
+    this.mostrarCalendario = false;
+    this.fechaDisponibilidadInicio = '';
+    this.fechaDisponibilidadFin = '';
+    this.habitacionesDisponibilidad = [];
+  }
+
+  reservarHabitacion(habitacion: Habitacion) {
+    const nuevaReserva: Reserva = {
+      id: 0,
+      persona: this.personas[0], // Aquí deberías obtener el DNI del usuario actual
+      establecimiento: habitacion.establecimiento,
+      habitacion: habitacion,
+      fechaEntrada: this.fechaDisponibilidadInicio,
+      fechaSalida: this.fechaDisponibilidadFin,
+      motivoEntrada: '',
+      observaciones: ''
+    };
+    this.adminService.addReserva(nuevaReserva).subscribe({
+      next: () => { alert('Reserva creada exitosamente'); this.cargarDatos(); this.cerrarCalendario(); },
+      error: (err) => { console.error('Error al reservar habitación:', err); }
+    });
   }
 
   guardar() {
