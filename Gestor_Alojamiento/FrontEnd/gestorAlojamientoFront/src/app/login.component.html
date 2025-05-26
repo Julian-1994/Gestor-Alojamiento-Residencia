@@ -1,7 +1,20 @@
-<!-- login.component.html -->
-<div class="d-flex flex-column min-vh-100">
-  <div class="container mt-5 flex-grow-1">
-    <h1 class="text-center mb-5">{{ title }}</h1>
+<div class="bg-body-secondary p-5 w-100 mb-5">
+  <div class="row align-items-center">
+    <!-- Imagen a la izquierda -->
+    <div class="col-2 text-start">
+      <img src="./R (2).png" alt="Logo" width="80" height="80">
+    </div>
+
+    <!-- Título centrado -->
+    <div class="col-8 text-center">
+      <h1 class="m-0">{{ title }}</h1>
+    </div>
+
+    <!-- Columna vacía para balancear -->
+    <div class="col-2"></div>
+  </div>
+</div>
+    <h3 class="text-center mb-5">Inicio de sesion</h3>
     <form (ngSubmit)="login()" class="needs-validation" novalidate>
       <div class="form-group row justify-content-center">
         <label for="usuario" class="col-form-label text-center col-md-2 mb-3">Usuario</label>
@@ -20,11 +33,10 @@
       </div>
     </form>
     <p *ngIf="error" class="text-danger mt-3 text-center">{{ error }}</p>
-  </div>
+
 
   <footer class="text-center mt-5">
     <div class="container">
-      <p>&copy; 2023 Tu Nombre. Todos los derechos reservados.</p>
+      <p>&copy; 2025. Julian Perez Pereña. Todos los derechos reservados.</p>
     </div>
   </footer>
-</div>

@@ -22,7 +22,7 @@ public class ReservaDTO {
 
     public ReservaDTO() {}
 
-    public ReservaDTO( String personaDni, String personaNombre, int establecimientoId, String establecimientoNombre,
+    public ReservaDTO( String personaDni,  int establecimientoId,
                       int habitacionId, String habitacionNumero, LocalDateTime fechaEntrada, LocalDateTime fechaSalida,
                       String motivoEntrada, String observaciones) {
        

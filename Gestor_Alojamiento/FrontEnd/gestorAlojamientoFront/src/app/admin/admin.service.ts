@@ -71,7 +71,6 @@ export class AdminService {
     return this.http.get<Usuario[]>(`${this.baseUrl}/usuarios`, { withCredentials: true });
   }
 
-// POST para agregar múltiples reservas
 addReserva(reservas: Reserva[]): Observable<any> {
   const formattedReservas = reservas.map(reserva => ({
     personaDni: typeof reserva.persona === 'string' ? reserva.persona : reserva.persona?.dni,
@@ -87,6 +86,24 @@ addReserva(reservas: Reserva[]): Observable<any> {
     headers: this.jsonHeaders,
     withCredentials: true
   });
+}
+
+  // Métodos adicionales para obtener objetos por ID o DNI
+  getPersonaByDni(dni: string): Observable<Persona> {
+    return this.http.get<Persona>(`${this.baseUrl}/personas/${dni}`, { withCredentials: true });
+  }
+
+  getEstablecimientoById(id: number): Observable<Establecimiento> {
+    return this.http.get<Establecimiento>(`${this.baseUrl}/establecimientos/${id}`, { withCredentials: true });
+  }
+
+  getHabitacionById(id: number): Observable<Habitacion> {
+    return this.http.get<Habitacion>(`${this.baseUrl}/habitaciones/${id}`, { withCredentials: true });
+  }
+
+  private formatDateString(date: string): string {
+  if (!date) return '';
+  return date.length > 10 ? date.substring(0, 10) : date;
 }
 
   addPersona(persona: Persona): Observable<any> {

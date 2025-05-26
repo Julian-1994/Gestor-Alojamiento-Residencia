@@ -31,14 +31,21 @@
     <tbody>
       <tr *ngFor="let r of reservasFiltradas">
         <td>{{ r.id }}</td>
-        <td>{{ r.persona.dni }}</td>
+        <td>{{ r.persona?.dni }}</td>
         <td>{{ r.establecimiento.id }}</td>
         <td>{{ r.habitacion.id }}</td>
         <td>{{ r.fechaEntrada | date:'yyyy/MM/dd' }}</td>
         <td>{{ r.fechaSalida | date:'yyyy/MM/dd' }}</td>
         <td>{{ r.motivoEntrada }}</td>
         <td>{{ r.observaciones }}</td>
-      </tr>
+        <td>
+          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('reservas', r)">Editar</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('reservas', r)">Eliminar</button>
+       </td>
+        </tr>
+
+       
+        
     </tbody>
   </table>
 </div>
@@ -122,10 +129,10 @@
       <h5>{{ esNuevo ? 'Añadir' : 'Editar' }} Reserva</h5>
 
       <form (ngSubmit)="guardar()" #formUser="ngForm">
-        <label>Persona DNI</label>
-        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" required>
-          <option *ngFor="let persona of personas" [value]="persona.dni">{{ persona.dni }}</option>
-        </select>
+       <label>Persona DNI</label>
+  <select class="form-control mb-2" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" required *ngIf="editandoEntidad && editandoEntidad.persona">
+    <option *ngFor="let persona of personas" [value]="persona.dni">{{ persona.dni }}</option>
+  </select>
 
         <label>Establecimiento ID</label>
         <select class="form-control mb-2" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" required>

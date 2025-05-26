@@ -113,8 +113,7 @@ public class Establecimiento {
 		@Override
 		public String toString() {
 			return "Establecimiento [id=" + id + ", nombre=" + nombre + ", direccion=" + direccion + ", telefono="
-					+ telefono + ", capacidad=" + capacidad + ", habitaciones=" + habitaciones + ", reservas="
-					+ reservas + "]";
+					+ telefono + ", capacidad=" + capacidad;
 		}
 
 		@Override
