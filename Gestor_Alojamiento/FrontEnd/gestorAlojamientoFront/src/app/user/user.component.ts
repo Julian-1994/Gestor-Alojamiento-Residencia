@@ -121,7 +121,7 @@ export class UserComponent implements OnInit {
       motivoEntrada: '',
       observaciones: ''
     };
-    this.adminService.addReserva(nuevaReserva).subscribe({
+    this.adminService.addReserva([nuevaReserva]).subscribe({
       next: () => { alert('Reserva creada exitosamente'); this.cargarDatos(); this.cerrarCalendario(); },
       error: (err) => { console.error('Error al reservar habitación:', err); }
     });
@@ -129,7 +129,7 @@ export class UserComponent implements OnInit {
 
   guardar() {
     if (this.esNuevo && this.editandoEntidad) {
-      this.adminService.addReserva(this.editandoEntidad).subscribe({
+      this.adminService.addReserva([this.editandoEntidad]).subscribe({
         next: () => { alert('Reserva creada exitosamente'); this.cargarDatos(); },
         error: (err) => { console.error('Error al crear reserva:', err); }
       });

@@ -1,5 +1,4 @@
 package com.Gestor_Alojamiento.Model;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -7,17 +6,24 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import java.util.List;
 import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
-@Entity
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class,
+  property = "id")
+  @Entity
+  
 public class Habitacion {
 
 	  @Id
-	    @GeneratedValue(strategy = GenerationType.AUTO)
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private int id;
 
 	    @Column(nullable = false)
@@ -33,7 +39,7 @@ public class Habitacion {
 	    @JsonIgnoreProperties("habitaciones")
 	    private Establecimiento establecimiento;
 	    
-	@JsonIgnore
+	@JsonIgnoreProperties("establecimiento")
 	    @OneToMany(mappedBy = "habitacion")
 	    private List<Reserva> reservas;
 

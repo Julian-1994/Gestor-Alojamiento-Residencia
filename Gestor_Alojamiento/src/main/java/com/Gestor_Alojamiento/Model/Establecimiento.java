@@ -7,13 +7,20 @@ import jakarta.persistence.Column;
 import jakarta.persistence.OneToMany;
 import java.util.List;
 import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class,
+  property = "id")
+
+  @Entity
 public class Establecimiento {
 
 	 @Id
-	    @GeneratedValue(strategy = GenerationType.AUTO)
+	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private int id;
 
 	    @Column(nullable = false)

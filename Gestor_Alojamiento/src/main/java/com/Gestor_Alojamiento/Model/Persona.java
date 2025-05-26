@@ -2,17 +2,24 @@ package com.Gestor_Alojamiento.Model;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-@Entity
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class,
+  property = "dni")
+  @Entity
 public class Persona {
     
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, unique = true)
     private String dni;
 
@@ -28,7 +35,7 @@ public class Persona {
     @Column(nullable = false, unique = true)
     private String email;
 
-	@JsonBackReference
+	@JsonIgnoreProperties("persona")
     @OneToMany(mappedBy = "persona")
     private List<Reserva> reservas;
 

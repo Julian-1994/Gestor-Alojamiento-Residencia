@@ -7,28 +7,36 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class,
+  property = "id")
+  @Table (name = "reserva")
 @Entity
 public class Reserva {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonIgnoreProperties("reservas")
     @JoinColumn(name = "persona_dni", nullable = false)
     private Persona persona;
 
     @ManyToOne
     @JsonIgnoreProperties("reservas")
+    @JsonIdentityReference(alwaysAsId = true)
     @JoinColumn(name = "establecimiento_id", nullable = false)
     private Establecimiento establecimiento;
 

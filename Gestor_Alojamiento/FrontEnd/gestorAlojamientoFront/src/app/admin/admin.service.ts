@@ -27,17 +27,17 @@ export class AdminService {
   }
 
   // Método para convertir Date a string en formato ISO
-  private dateToString(date: Date | null): string {
-    if (!date) {
-      return '';
-    }
-    try {
-      return date.toISOString().split('T')[0]; // Obtiene solo la parte de la fecha
-    } catch (error) {
-      console.error('Error al convertir fecha:', error);
-      return ''; // Devuelve una cadena vacía o maneja el error de otra manera
-    }
+ private dateToString(date: Date | null): string {
+  if (!date) {
+    return '';
   }
+  try {
+    return date.toISOString().slice(0,19); // yyyy-MM-ddTHH:mm:ss
+  } catch (error) {
+    console.error('Error al convertir fecha:', error);
+    return '';
+  }
+}
 
   // GET
   getReservas(): Observable<Reserva[]> {
@@ -71,18 +71,23 @@ export class AdminService {
     return this.http.get<Usuario[]>(`${this.baseUrl}/usuarios`, { withCredentials: true });
   }
 
-  // POST
-  addReserva(reserva: Reserva): Observable<any> {
-    const formattedReserva = {
-      ...reserva,
-      fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
-      fechaSalida: this.dateToString(this.convertDateToISO(reserva.fechaSalida)),
-    };
-    return this.http.post(`${this.baseUrl}/reservas`, formattedReserva, {
-      headers: this.jsonHeaders,
-      withCredentials: true
-    });
-  }
+// POST para agregar múltiples reservas
+addReserva(reservas: Reserva[]): Observable<any> {
+  const formattedReservas = reservas.map(reserva => ({
+    personaDni: typeof reserva.persona === 'string' ? reserva.persona : reserva.persona?.dni,
+    establecimientoId: typeof reserva.establecimiento === 'number' ? reserva.establecimiento : reserva.establecimiento?.id,
+    habitacionId: typeof reserva.habitacion === 'number' ? reserva.habitacion : reserva.habitacion?.id,
+    fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
+    fechaSalida: this.dateToString(this.convertDateToISO(reserva.fechaSalida)),
+    motivoEntrada: reserva.motivoEntrada,
+    observaciones: reserva.observaciones
+  }));
+
+  return this.http.post(`${this.baseUrl}/reservas`, formattedReservas, {
+    headers: this.jsonHeaders,
+    withCredentials: true
+  });
+}
 
   addPersona(persona: Persona): Observable<any> {
     const formattedPersona = {

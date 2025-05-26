@@ -163,17 +163,33 @@ export class AdminComponent implements OnInit {
   agregarEntidad() {
     switch(this.entidadTipo) {
       case 'reservas':
-        this.adminService.addReserva(this.editandoEntidad).subscribe({
-          next: () => { this.postOperacion(); },
-          error: (err) => { console.error('Error al crear reserva:', err); }
-        });
-        break;
-      case 'personas':
-        this.adminService.addPersona(this.editandoEntidad).subscribe({
-          next: () => { this.postOperacion(); },
-          error: (err) => { console.error('Error al crear persona:', err); }
-        });
-        break;
+    const reservaLimpia = JSON.parse(JSON.stringify(this.editandoEntidad));
+
+// Remueve propiedades recursivas que no interesan
+if (reservaLimpia.persona?.reservas) {
+  delete reservaLimpia.persona.reservas;
+}
+
+// Convierte persona, establecimiento y habitacion a solo id (para Jackson)
+if (reservaLimpia.persona && typeof reservaLimpia.persona === 'object') {
+  reservaLimpia.persona = reservaLimpia.persona.dni || reservaLimpia.persona.id || reservaLimpia.persona; // Usar dni o id según modelo
+}
+if (reservaLimpia.establecimiento && typeof reservaLimpia.establecimiento === 'object') {
+  reservaLimpia.establecimiento = reservaLimpia.establecimiento.id;
+}
+if (reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
+  reservaLimpia.habitacion = reservaLimpia.habitacion.id;
+}
+
+// Ajustar fechas
+reservaLimpia.fechaEntrada = reservaLimpia.fechaEntrada?.split('T')[0];
+reservaLimpia.fechaSalida = reservaLimpia.fechaSalida?.split('T')[0];
+
+this.adminService.addReserva([reservaLimpia]).subscribe({
+  next: () => { this.postOperacion(); },
+  error: (err) => { console.error('Error al crear reserva:', err); }
+});
+  break;
       case 'habitaciones':
         this.adminService.addHabitacion(this.editandoEntidad).subscribe({
         next: () => { this.postOperacion(); },
@@ -199,11 +215,33 @@ export class AdminComponent implements OnInit {
   actualizarEntidad() {
     switch(this.entidadTipo) {
       case 'reservas':
-        this.adminService.updateReserva(this.editandoEntidad.id, this.editandoEntidad).subscribe({
-          next: () => { this.postOperacion(); },
-          error: (err) => { console.error('Error al actualizar reserva:', err); }
-        });
-        break;
+        const reservaActualizada = JSON.parse(JSON.stringify(this.editandoEntidad));
+
+  if (reservaActualizada.persona?.reservas) {
+    delete reservaActualizada.persona.reservas;
+  }
+
+  if (reservaActualizada.establecimiento && typeof reservaActualizada.establecimiento === 'object') {
+    reservaActualizada.establecimiento = reservaActualizada.establecimiento.id;
+  }
+
+  if (reservaActualizada.habitacion && typeof reservaActualizada.habitacion === 'object') {
+    reservaActualizada.habitacion = reservaActualizada.habitacion.id;
+  }
+
+  if (reservaActualizada.fechaEntrada?.includes('T')) {
+    reservaActualizada.fechaEntrada = reservaActualizada.fechaEntrada.split('T')[0];
+  }
+
+  if (reservaActualizada.fechaSalida?.includes('T')) {
+    reservaActualizada.fechaSalida = reservaActualizada.fechaSalida.split('T')[0];
+  }
+
+  this.adminService.updateReserva(reservaActualizada.id, reservaActualizada).subscribe({
+    next: () => { this.postOperacion(); },
+    error: (err) => { console.error('Error al actualizar reserva:', err); }
+  });
+  break;
       case 'personas':
         this.adminService.updatePersona(this.editandoEntidad.dni, this.editandoEntidad).subscribe({
           next: () => { this.postOperacion(); },
