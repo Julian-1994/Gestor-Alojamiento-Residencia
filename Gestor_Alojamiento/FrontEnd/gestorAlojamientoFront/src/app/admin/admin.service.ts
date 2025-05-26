@@ -32,7 +32,7 @@ export class AdminService {
       return '';
     }
     try {
-      return date.toISOString().split('T')[0]; // Obtiene solo la parte de la fecha
+      return date.toISOString();
     } catch (error) {
       console.error('Error al convertir fecha:', error);
       return ''; // Devuelve una cadena vacía o maneja el error de otra manera
@@ -71,14 +71,36 @@ export class AdminService {
     return this.http.get<Usuario[]>(`${this.baseUrl}/usuarios`, { withCredentials: true });
   }
 
+  // Métodos adicionales para obtener objetos por ID o DNI
+  getPersonaByDni(dni: string): Observable<Persona> {
+    return this.http.get<Persona>(`${this.baseUrl}/personas/${dni}`, { withCredentials: true });
+  }
+
+  getEstablecimientoById(id: number): Observable<Establecimiento> {
+    return this.http.get<Establecimiento>(`${this.baseUrl}/establecimientos/${id}`, { withCredentials: true });
+  }
+
+  getHabitacionById(id: number): Observable<Habitacion> {
+    return this.http.get<Habitacion>(`${this.baseUrl}/habitaciones/${id}`, { withCredentials: true });
+  }
+
+  private formatDateString(date: string): string {
+  if (!date) return '';
+  return date.length > 10 ? date.substring(0, 10) : date;
+}
+
   // POST
   addReserva(reserva: Reserva): Observable<any> {
     const formattedReserva = {
-      ...reserva,
-      fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
-      fechaSalida: this.dateToString(this.convertDateToISO(reserva.fechaSalida)),
-    };
-    return this.http.post(`${this.baseUrl}/reservas`, formattedReserva, {
+    fechaEntrada: this.formatDateString(reserva.fechaEntrada),
+    fechaSalida: this.formatDateString(reserva.fechaSalida),
+    motivoEntrada: reserva.motivoEntrada,
+    observaciones: reserva.observaciones,
+    persona: { dni: reserva.persona?.dni },
+    establecimiento: { id: reserva.establecimiento?.id },
+    habitacion: { id: reserva.habitacion?.id }
+  };
+    return this.http.post(`${this.baseUrl}/reservas`, reserva, {
       headers: this.jsonHeaders,
       withCredentials: true
     });

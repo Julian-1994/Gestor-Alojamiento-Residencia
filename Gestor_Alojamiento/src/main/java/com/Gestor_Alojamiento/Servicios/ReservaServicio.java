@@ -1,6 +1,7 @@
 package com.Gestor_Alojamiento.Servicios;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,10 @@ public class ReservaServicio {
     @Autowired
     private HabitacionServicio habitacionServicio;
 
+    @Autowired private PersonaServicio personaServicio;
+
+    @Autowired private EstablecimientoServicio establecimientoServicio;
+
     public List<Reserva> findAll() {
         return reservaRepository.findAll();
     }
@@ -28,24 +33,50 @@ public class ReservaServicio {
     }
 
     public Reserva save(Reserva reserva) {
-        // Validar fechas
-        if (reserva.getFechaEntrada().isAfter(reserva.getFechaSalida())) {
-            throw new IllegalArgumentException("La fecha de entrada no puede ser posterior a la fecha de salida.");
-        }
-
-        // Guardar reserva
-        Reserva nuevaReserva = reservaRepository.save(reserva);
-
-        // Actualizar estado de la habitación
-        actualizarEstadoHabitacion(reserva.getHabitacion(), reserva.getFechaEntrada(), reserva.getFechaSalida());
-
-        return nuevaReserva;
+    if (reserva.getFechaEntrada().after(reserva.getFechaSalida())) {
+        throw new IllegalArgumentException("La fecha de entrada no puede ser posterior a la fecha de salida.");
     }
 
-    private void actualizarEstadoHabitacion(Habitacion habitacion, LocalDateTime fechaEntrada, LocalDateTime fechaSalida) {
+    // 1. Verificar o guardar persona
+    var persona = reserva.getPersona();
+    var personaExistente = personaServicio.findById(persona.getDni());
+    if (personaExistente != null) {
+        reserva.setPersona(personaExistente);
+    } else {
+        reserva.setPersona(personaServicio.save(persona));
+    }
+
+    // 2. Obtener establecimiento existente
+    var establecimiento = establecimientoServicio.findById(reserva.getEstablecimiento().getId());
+    if (establecimiento == null) {
+        throw new IllegalArgumentException("Establecimiento no encontrado.");
+    }
+    reserva.setEstablecimiento(establecimiento);
+
+    // 3. Obtener habitación y validar pertenencia al establecimiento
+    var habitacion = habitacionServicio.findById(reserva.getHabitacion().getId());
+    if (habitacion == null) {
+        throw new IllegalArgumentException("Habitación no encontrada.");
+    }
+
+if (habitacion.getEstablecimiento().getId() != establecimiento.getId()) {
+        throw new IllegalArgumentException("La habitación no pertenece al establecimiento indicado.");
+    }
+    reserva.setHabitacion(habitacion);
+
+    // 4. Guardar reserva
+    Reserva nuevaReserva = reservaRepository.save(reserva);
+
+    // 5. Actualizar estado de la habitación
+    actualizarEstadoHabitacion(habitacion, reserva.getFechaEntrada(), reserva.getFechaSalida());
+
+    return nuevaReserva;
+}
+
+    private void actualizarEstadoHabitacion(Habitacion habitacion, Date fechaEntrada, Date fechaSalida) {
         // Lógica para cambiar el estado de la habitación
-        LocalDateTime now = LocalDateTime.now();
-        if (fechaEntrada.isBefore(now) && fechaSalida.isAfter(now)) {
+         Date now = new Date();
+        if (fechaEntrada.before(now) && fechaSalida.after(now)) {
             habitacion.setEstado(EstadoHabitacion.OCUPADA);
         } else {
             habitacion.setEstado(EstadoHabitacion.DISPONIBLE);
@@ -69,7 +100,7 @@ public class ReservaServicio {
         return reservaRepository.findByHabitacionId(habitacionId);
     }
 
-    public List<Reserva> findReservasBetweenDates(LocalDateTime fechaEntrada, LocalDateTime fechaSalida) {
+    public List<Reserva> findReservasBetweenDates(Date fechaEntrada, Date fechaSalida) {
         return reservaRepository.findReservasBetweenDates(fechaEntrada, fechaSalida);
     }
 

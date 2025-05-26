@@ -1,14 +1,16 @@
 package com.Gestor_Alojamiento.Controller;
-
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.Gestor_Alojamiento.Model.Reserva;
+import com.Gestor_Alojamiento.Servicios.EstablecimientoServicio;
 import com.Gestor_Alojamiento.Servicios.ReservaServicio;
+
+
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -17,6 +19,8 @@ public class ReservaController {
 
     @Autowired
     private ReservaServicio reservaServicio;
+
+    @Autowired EstablecimientoServicio establecimientoServicio;
 
     @GetMapping
     public List<Reserva> getAllReservas() {
@@ -32,25 +36,25 @@ public class ReservaController {
         return ResponseEntity.ok(reserva);
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<Reserva> createReserva(@RequestBody Reserva reserva) {
-        if (reserva.getFechaEntrada().isAfter(reserva.getFechaSalida())) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        try {
-            Reserva nuevaReserva = reservaServicio.save(reserva);
-            return ResponseEntity.ok(nuevaReserva);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+public ResponseEntity<Reserva> createReserva(@RequestBody Reserva reserva) {
+    if (reserva.getFechaEntrada().after(reserva.getFechaSalida())) {
+        return ResponseEntity.badRequest().body(null);
     }
+    try {
+        Reserva nuevaReserva = reservaServicio.save(reserva);
+        return ResponseEntity.ok(nuevaReserva);
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
 
     @PutMapping(value = "/{id}", consumes = "application/json")
     public ResponseEntity<Reserva> updateReserva(@PathVariable int id, @RequestBody Reserva reserva) {
         if (!reservaServicio.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        if (reserva.getFechaEntrada().isAfter(reserva.getFechaSalida())) {
+        if (reserva.getFechaEntrada().after(reserva.getFechaSalida())) {
             return ResponseEntity.badRequest().body(null);
         }
         reserva.setId(id);
@@ -87,7 +91,7 @@ public class ReservaController {
     }
 
     @GetMapping("/fechas")
-    public List<Reserva> getReservasBetweenDates(@RequestParam LocalDateTime fechaEntrada, @RequestParam LocalDateTime fechaSalida) {
+    public List<Reserva> getReservasBetweenDates(@RequestParam Date fechaEntrada, @RequestParam Date fechaSalida) {
         return reservaServicio.findReservasBetweenDates(fechaEntrada, fechaSalida);
     }
 }

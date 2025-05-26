@@ -56,8 +56,8 @@ export class UserComponent implements OnInit {
   aplicarFiltroReservas() {
     const { nombre, dni } = this.filtroReservas;
     this.reservasFiltradas = this.reservas.filter(r =>
-      (!nombre || r.persona.nombre.toLowerCase().includes(nombre.toLowerCase())) &&
-      (!dni || r.persona.dni.toLowerCase().includes(dni.toLowerCase()))
+      (!nombre || r.persona?.nombre.toLowerCase().includes(nombre.toLowerCase())) &&
+      (!dni || r.persona?.dni.toLowerCase().includes(dni.toLowerCase()))
     );
   }
 
@@ -140,5 +140,23 @@ export class UserComponent implements OnInit {
   cancelar() {
     this.editandoEntidad = null;
     this.esNuevo = false;
+  }
+
+   abrirEditar(tipo: string, entidad: any) {
+    this.esNuevo = false;
+    this.editandoEntidad = { ...entidad }; // clonar objeto para no editar original directo
+  }
+
+  eliminarEntidad(tipo: string, entidad: any) {
+    if (!confirm('¿Seguro que deseas eliminar este elemento?')) return;
+    switch (tipo) {
+      case 'reservas':
+        this.adminService.deleteReserva(entidad.id).subscribe({
+          next: () => { this.cargarDatos(); },
+          error: (err) => { console.error('Error al eliminar reserva:', err); }
+        });
+        break;
+      // Agrega casos para otros tipos de entidades si es necesario
+    }
   }
 }

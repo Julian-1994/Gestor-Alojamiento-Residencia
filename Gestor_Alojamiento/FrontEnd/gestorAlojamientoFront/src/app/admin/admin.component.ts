@@ -111,11 +111,24 @@ export class AdminComponent implements OnInit {
   abrirNuevo(tipo: string) {
     this.entidadTipo = tipo;
     this.esNuevo = true;
-    this.editandoEntidad = {    persona: this.personas[0], // Asignar la persona adecuada
-      establecimiento: this.habitaciones[0].establecimiento,
-      habitacion: this.habitaciones[0],
-  
-    }; // objeto vacío para rellenar
+    this.editandoEntidad = this.crearEntidadVacia(tipo); // objeto vacío para rellenar
+  }
+
+  crearEntidadVacia(tipo: string) {
+    switch(tipo) {
+      case 'reservas':
+        return { persona: {}, establecimiento: {}, habitacion: {} }; // Inicializar objetos vacíos
+      case 'personas':
+        return {};
+      case 'habitaciones':
+        return { establecimiento: {} }; // Inicializar establecimiento vacío
+      case 'establecimientos':
+        return {};
+      case 'usuarios':
+        return {};
+      default:
+        return {};
+    }
   }
 
   // Abrir formulario para editar
@@ -162,10 +175,35 @@ export class AdminComponent implements OnInit {
   // Añadir entidad usando AdminService
   agregarEntidad() {
     switch(this.entidadTipo) {
-      case 'reservas':
-        this.adminService.addReserva(this.editandoEntidad).subscribe({
-          next: () => { this.postOperacion(); },
-          error: (err) => { console.error('Error al crear reserva:', err); }
+       case 'reservas':
+        this.adminService.getPersonaByDni(this.editandoEntidad.persona.dni).subscribe({
+          next: (persona) => {
+            this.adminService.getEstablecimientoById(this.editandoEntidad.establecimiento.id).subscribe({
+              next: (establecimiento) => {
+                this.adminService.getHabitacionById(this.editandoEntidad.habitacion.id).subscribe({
+                  next: (habitacion) => {
+                    const reserva: Reserva = {
+                      persona: persona,
+                      establecimiento: establecimiento,
+                      habitacion: habitacion,
+                      fechaEntrada: this.editandoEntidad.fechaEntrada,
+                      fechaSalida: this.editandoEntidad.fechaSalida,
+                      motivoEntrada: this.editandoEntidad.motivoEntrada,
+                      observaciones: this.editandoEntidad.observaciones,
+                      
+                    };
+                    this.adminService.addReserva(reserva).subscribe({
+                      next: () => { this.postOperacion(); },
+                      error: (err) => { console.error('Error al crear reserva:', err); }
+                    });
+                  },
+                  error: (err) => { console.error('Error al obtener habitación:', err); }
+                });
+              },
+              error: (err) => { console.error('Error al obtener establecimiento:', err); }
+            });
+          },
+          error: (err) => { console.error('Error al obtener persona:', err); }
         });
         break;
       case 'personas':
@@ -199,6 +237,16 @@ export class AdminComponent implements OnInit {
   actualizarEntidad() {
     switch(this.entidadTipo) {
       case 'reservas':
+          const reservaActualizada: Reserva = {
+          id: this.editandoEntidad.id,
+          persona: { dni: this.editandoEntidad.persona.dni } as Persona,
+          establecimiento: { id: this.editandoEntidad.establecimiento.id } as Establecimiento,
+          habitacion: { id: this.editandoEntidad.habitacion.id } as Habitacion,
+          fechaEntrada: this.editandoEntidad.fechaEntrada,
+          fechaSalida: this.editandoEntidad.fechaSalida,
+          motivoEntrada: this.editandoEntidad.motivoEntrada,
+          observaciones: this.editandoEntidad.observaciones
+        };
         this.adminService.updateReserva(this.editandoEntidad.id, this.editandoEntidad).subscribe({
           next: () => { this.postOperacion(); },
           error: (err) => { console.error('Error al actualizar reserva:', err); }
@@ -309,7 +357,7 @@ export class AdminComponent implements OnInit {
     const { dni, establecimientoId, fechaDesde, fechaHasta } = this.filtroReservas;
 
     this.reservasFiltradas = this.reservas.filter(r => {
-      const coincideDni = !dni || r.persona.dni.toLowerCase().includes(dni.toLowerCase());
+      const coincideDni = !dni || r.persona?.dni.toLowerCase().includes(dni.toLowerCase());
       const coincideEstablecimiento = !establecimientoId || r.establecimiento.id.toString().includes(establecimientoId);
       
       const fechaEntrada = new Date(r.fechaEntrada);
