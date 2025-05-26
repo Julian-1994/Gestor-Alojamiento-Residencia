@@ -1,7 +1,6 @@
 package com.Gestor_Alojamiento.Servicios;
 
-
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class ReservaServicio {
     }
 
     public Reserva save(Reserva reserva) {
-    if (reserva.getFechaEntrada().after(reserva.getFechaSalida())) {
+    if (reserva.getFechaEntrada().isAfter(reserva.getFechaSalida())) {
         throw new IllegalArgumentException("La fecha de entrada no puede ser posterior a la fecha de salida.");
     }
 
@@ -72,17 +71,15 @@ if (habitacion.getEstablecimiento().getId() != establecimiento.getId()) {
 
     return nuevaReserva;
 }
-
-    private void actualizarEstadoHabitacion(Habitacion habitacion, Date fechaEntrada, Date fechaSalida) {
-        // Lógica para cambiar el estado de la habitación
-         Date now = new Date();
-        if (fechaEntrada.before(now) && fechaSalida.after(now)) {
-            habitacion.setEstado(EstadoHabitacion.OCUPADA);
-        } else {
-            habitacion.setEstado(EstadoHabitacion.DISPONIBLE);
-        }
-        habitacionServicio.save(habitacion);
+private void actualizarEstadoHabitacion(Habitacion habitacion, LocalDateTime fechaEntrada, LocalDateTime fechaSalida) {
+    LocalDateTime now = LocalDateTime.now();
+    if (fechaEntrada.isBefore(now) && fechaSalida.isAfter(now)) {
+        habitacion.setEstado(EstadoHabitacion.OCUPADA);
+    } else {
+        habitacion.setEstado(EstadoHabitacion.DISPONIBLE);
     }
+    habitacionServicio.save(habitacion);
+}
 
     public void deleteById(int id) {
         reservaRepository.deleteById(id);
@@ -100,7 +97,7 @@ if (habitacion.getEstablecimiento().getId() != establecimiento.getId()) {
         return reservaRepository.findByHabitacionId(habitacionId);
     }
 
-    public List<Reserva> findReservasBetweenDates(Date fechaEntrada, Date fechaSalida) {
+    public List<Reserva> findReservasBetweenDates(LocalDateTime fechaEntrada, LocalDateTime fechaSalida) {
         return reservaRepository.findReservasBetweenDates(fechaEntrada, fechaSalida);
     }
 

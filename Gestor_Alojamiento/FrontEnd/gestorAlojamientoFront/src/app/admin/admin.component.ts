@@ -347,7 +347,7 @@ this.adminService.addReserva([reservaLimpia]).subscribe({
     const { dni, establecimientoId, fechaDesde, fechaHasta } = this.filtroReservas;
 
     this.reservasFiltradas = this.reservas.filter(r => {
-      const coincideDni = !dni || r.persona.dni.toLowerCase().includes(dni.toLowerCase());
+      const coincideDni = !dni || r.persona?.dni.toLowerCase().includes(dni.toLowerCase());
       const coincideEstablecimiento = !establecimientoId || r.establecimiento.id.toString().includes(establecimientoId);
       
       const fechaEntrada = new Date(r.fechaEntrada);

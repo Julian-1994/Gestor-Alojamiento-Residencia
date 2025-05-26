@@ -17,23 +17,4 @@ import org.springframework.context.annotation.Configuration;
 @EnableBatchProcessing
 public class BatchConfig {
 
-    @Bean
-    public Job eliminarReservasAntiguasJob(JobFactory jobBuilderFactory, Step eliminarReservasAntiguasStep) {
-        return jobBuilderFactory.get("eliminarReservasAntiguasJob")
-                .incrementer(new RunIdIncrementer())
-                .flow(eliminarReservasAntiguasStep)
-                .end()
-                .build();
-    }
-
-    @Bean
-    public Step eliminarReservasAntiguasStep(StepBuilder stepBuilderFactory,
-                                             ReservaAntiguaReader reader,
-                                             ReservaAntiguaWriter writer) {
-        return stepBuilderFactory.get("eliminarReservasAntiguasStep")
-                .<Reserva, Reserva>chunk(10)
-                .reader(reader)
-                .writer(writer)
-                .build();
-    }
 }
