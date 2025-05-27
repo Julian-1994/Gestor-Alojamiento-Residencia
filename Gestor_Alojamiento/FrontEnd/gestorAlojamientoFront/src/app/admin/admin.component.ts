@@ -165,49 +165,36 @@ export class AdminComponent implements OnInit {
       case 'reservas':
     const reservaLimpia = JSON.parse(JSON.stringify(this.editandoEntidad));
 
-// Remueve propiedades recursivas que no interesan
-if (reservaLimpia.persona?.reservas) {
-  delete reservaLimpia.persona.reservas;
-}
+      // Remueve propiedades recursivas que no interesan
+      if (reservaLimpia.persona?.reservas) {
+        delete reservaLimpia.persona.reservas;
+      }
 
-// Convierte persona, establecimiento y habitacion a solo id (para Jackson)
-if (reservaLimpia.persona && typeof reservaLimpia.persona === 'object') {
-  reservaLimpia.persona = reservaLimpia.persona.dni || reservaLimpia.persona.id || reservaLimpia.persona; // Usar dni o id según modelo
-}
-if (reservaLimpia.establecimiento && typeof reservaLimpia.establecimiento === 'object') {
-  reservaLimpia.establecimiento = reservaLimpia.establecimiento.id;
-}
-if (reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
-  reservaLimpia.habitacion = reservaLimpia.habitacion.id;
-}
+      // Si no tiene establecimiento, pero tiene habitación con establecimiento, asignarlo
+      if (!reservaLimpia.establecimiento && reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
+        reservaLimpia.establecimiento = reservaLimpia.habitacion.establecimiento?.id;
+      }
 
-// Ajustar fechas
-reservaLimpia.fechaEntrada = reservaLimpia.fechaEntrada?.split('T')[0];
-reservaLimpia.fechaSalida = reservaLimpia.fechaSalida?.split('T')[0];
+      // Convierte persona, establecimiento y habitación a solo id/dni
+      if (reservaLimpia.persona && typeof reservaLimpia.persona === 'object') {
+        reservaLimpia.persona = reservaLimpia.persona.dni || reservaLimpia.persona.id || reservaLimpia.persona;
+      }
+      if (reservaLimpia.establecimiento && typeof reservaLimpia.establecimiento === 'object') {
+        reservaLimpia.establecimiento = reservaLimpia.establecimiento.id;
+      }
+      if (reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
+        reservaLimpia.habitacion = reservaLimpia.habitacion.id;
+      }
 
-this.adminService.addReserva([reservaLimpia]).subscribe({
-  next: () => { this.postOperacion(); },
-  error: (err) => { console.error('Error al crear reserva:', err); }
-});
-  break;
-      case 'habitaciones':
-        this.adminService.addHabitacion(this.editandoEntidad).subscribe({
+      // Ajustar fechas (solo fecha, sin tiempo)
+      reservaLimpia.fechaEntrada = reservaLimpia.fechaEntrada?.split('T')[0];
+      reservaLimpia.fechaSalida = reservaLimpia.fechaSalida?.split('T')[0];
+
+      this.adminService.addReserva([reservaLimpia]).subscribe({
         next: () => { this.postOperacion(); },
-        error: (err) => { console.error('Error al crear habitación:', err); }
-  });
-  break;
-      case 'establecimientos':
-        this.adminService.addEstablecimiento(this.editandoEntidad).subscribe({
-          next: () => { this.postOperacion(); },
-          error: (err) => { console.error('Error al crear establecimiento:', err); }
-        });
-        break;
-      case 'usuarios':
-        this.adminService.addUsuario(this.editandoEntidad).subscribe({
-          next: () => { this.postOperacion(); },
-          error: (err) => { console.error('Error al crear usuario:', err); }
-        });
-        break;
+        error: (err) => { console.error('Error al crear reserva:', err); }
+      });
+      break;
     }
   }
 

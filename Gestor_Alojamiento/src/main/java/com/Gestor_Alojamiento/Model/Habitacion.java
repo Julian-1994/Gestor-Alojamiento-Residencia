@@ -2,6 +2,7 @@ package com.Gestor_Alojamiento.Model;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import java.util.List;
@@ -37,6 +38,7 @@ public class Habitacion {
 
 	    @ManyToOne 
 	    @JsonIgnoreProperties("habitaciones")
+		@JoinColumn(name = "establecimiento_id", nullable = false)
 	    private Establecimiento establecimiento;
 	    
 	@JsonIgnoreProperties("establecimiento")

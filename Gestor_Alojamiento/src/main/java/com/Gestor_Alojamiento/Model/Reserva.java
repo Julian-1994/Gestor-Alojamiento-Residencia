@@ -35,7 +35,6 @@ public class Reserva {
     private Persona persona;
 
     @ManyToOne
-    @JsonIgnoreProperties("reservas")
     @JsonIdentityReference(alwaysAsId = true)
     @JoinColumn(name = "establecimiento_id", nullable = false)
     private Establecimiento establecimiento;

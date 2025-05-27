@@ -95,23 +95,50 @@ public class ReservaController {
 }
 
 
-    @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Reserva> updateReserva(@PathVariable int id, @RequestBody Reserva reserva) {
-        if (!reservaServicio.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        if (reserva.getFechaEntrada().isAfter(reserva.getFechaSalida())) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        reserva.setId(id);
-        try {
-            Reserva actualizadaReserva = reservaServicio.save(reserva);
-            return ResponseEntity.ok(actualizadaReserva);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+   @PutMapping(value = "/{id}", consumes = "application/json")
+public ResponseEntity<?> updateReserva(@PathVariable int id, @RequestBody ReservaDTO dto) {
+    // Verifica existencia de la reserva
+    Reserva reservaExistente = reservaServicio.findById(id);
+    if (reservaExistente == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reserva no encontrada con ID: " + id);
     }
 
+    // Validación de fechas
+    if (dto.getFechaEntrada().isAfter(dto.getFechaSalida())) {
+        return ResponseEntity.badRequest().body("La fecha de entrada no puede ser posterior a la de salida");
+    }
+
+    try {
+        // Buscar entidades relacionadas
+        Persona persona = personaServicio.findById(dto.getPersonaDni());
+        if (persona == null) {
+            return ResponseEntity.badRequest().body("Persona no encontrada con DNI: " + dto.getPersonaDni());
+        }
+
+        Establecimiento establecimiento = establecimientoRepository.findById(dto.getEstablecimientoId())
+                .orElseThrow(() -> new RuntimeException("Establecimiento no encontrado"));
+
+        Habitacion habitacion = habitacionRepository.findById(dto.getHabitacionId())
+                .orElseThrow(() -> new RuntimeException("Habitación no encontrada"));
+
+        // Actualizar los campos
+        reservaExistente.setPersona(persona);
+        reservaExistente.setEstablecimiento(establecimiento);
+        reservaExistente.setHabitacion(habitacion);
+        reservaExistente.setFechaEntrada(dto.getFechaEntrada());
+        reservaExistente.setFechaSalida(dto.getFechaSalida());
+        reservaExistente.setMotivoEntrada(dto.getMotivoEntrada());
+        reservaExistente.setObservaciones(dto.getObservaciones());
+
+        // Guardar
+        Reserva actualizada = reservaServicio.save(reservaExistente);
+        return ResponseEntity.ok(actualizada);
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al actualizar reserva: " + e.getMessage());
+    }
+}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReserva(@PathVariable int id) {
         if (!reservaServicio.existsById(id)) {

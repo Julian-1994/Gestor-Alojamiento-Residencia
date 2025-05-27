@@ -7,6 +7,7 @@ import { Persona } from '../model/persona.model';
 import { Habitacion } from '../model/habitacion.model';
 import { Establecimiento } from '../model/establecimiento.model';
 import { Usuario } from '../model/usuario.model';
+import { ReservaDTO } from '../model/ReservaDTO.model';
 
 @Injectable({
   providedIn: 'root'
@@ -138,18 +139,35 @@ addReserva(reservas: Reserva[]): Observable<any> {
     });
   }
 
-  // PUT
-  updateReserva(id: number, reserva: Reserva): Observable<any> {
-    const formattedReserva = {
-      ...reserva,
-      fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
-      fechaSalida: this.dateToString(this.convertDateToISO(reserva.fechaSalida)),
-    };
-    return this.http.put(`${this.baseUrl}/reservas/${id}`, formattedReserva, {
+ updateReserva(id: number, reserva: Reserva): Observable<any> {
+  const dto: ReservaDTO = {
+    personaDni:
+      typeof reserva.persona === 'string'
+        ? reserva.persona
+        : reserva.persona?.dni ?? '',
+    establecimientoId:
+      typeof reserva.establecimiento === 'number'
+        ? reserva.establecimiento
+        : reserva.establecimiento?.id ?? 0,
+    habitacionId:
+      typeof reserva.habitacion === 'number'
+        ? reserva.habitacion
+        : reserva.habitacion?.id ?? 0,
+    fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
+    fechaSalida: this.dateToString(this.convertDateToISO(reserva.fechaSalida)),
+    motivoEntrada: reserva.motivoEntrada ?? '',
+    observaciones: reserva.observaciones ?? ''
+  };
+
+  return this.http.put(
+    `${this.baseUrl}/reservas/${id}`,
+    dto,
+    {
       headers: this.jsonHeaders,
       withCredentials: true
-    });
-  }
+    }
+  );
+}
 
   updatePersona(dni: string, persona: Persona): Observable<any> {
     const formattedPersona = {
