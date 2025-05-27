@@ -1,5 +1,7 @@
 package DTO;
 
+import java.util.List;
+
 public class EstablecimientoDTO {
     private int id;
     private String nombre;
@@ -7,12 +9,23 @@ public class EstablecimientoDTO {
     private String telefono;
     private int capacidad;
 
-      public EstablecimientoDTO(int id, String nombre, String direccion, String telefono, int capacidad) {
+    // IDs de habitaciones asociadas
+    private List<Integer> habitacionIds;
+
+    public EstablecimientoDTO() {}
+
+    public EstablecimientoDTO(int id,
+                              String nombre,
+                              String direccion,
+                              String telefono,
+                              int capacidad,
+                              List<Integer> habitacionIds) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
         this.telefono = telefono;
         this.capacidad = capacidad;
+        this.habitacionIds = habitacionIds;
     }
 
     // Getters y setters
@@ -30,5 +43,11 @@ public class EstablecimientoDTO {
 
     public int getCapacidad() { return capacidad; }
     public void setCapacidad(int capacidad) { this.capacidad = capacidad; }
-}
 
+    public List<Integer> getHabitacionIds() {
+        return habitacionIds;
+    }
+    public void setHabitacionIds(List<Integer> habitacionIds) {
+        this.habitacionIds = habitacionIds;
+    }
+}
