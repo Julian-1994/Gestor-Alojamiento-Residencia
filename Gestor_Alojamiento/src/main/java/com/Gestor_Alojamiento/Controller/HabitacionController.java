@@ -1,67 +1,55 @@
 package com.Gestor_Alojamiento.Controller;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.Gestor_Alojamiento.Model.Establecimiento;
+import org.springframework.web.bind.annotation.*;
 import com.Gestor_Alojamiento.Model.Habitacion;
-import com.Gestor_Alojamiento.Servicios.EstablecimientoServicio;
 import com.Gestor_Alojamiento.Servicios.HabitacionServicio;
+import DTO.HabitacionDTO;
 
 @RestController
 @RequestMapping("/api/habitaciones")
 @CrossOrigin(origins = "http://localhost:4200")
 public class HabitacionController {
 
-	@Autowired
+    @Autowired
     private HabitacionServicio habitacionServicio;
 
-    @Autowired
-private EstablecimientoServicio establecimientoServicio;
-
-    @GetMapping
-    public ResponseEntity<List<Habitacion>> getAllHabitaciones() {
-        return ResponseEntity.ok(habitacionServicio.findAll());
+   
+   @GetMapping
+    public ResponseEntity<List<HabitacionDTO>> getAllHabitaciones() {
+        List<HabitacionDTO> dtos = habitacionServicio.findAll().stream()
+            .map(habitacionServicio::toDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Habitacion> getHabitacionById(@PathVariable int id) {
+       @GetMapping("/{id}")
+    public ResponseEntity<HabitacionDTO> getHabitacionById(@PathVariable int id) {
         Habitacion habitacion = habitacionServicio.findById(id);
         if (habitacion == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(habitacion);
+        return ResponseEntity.ok(habitacionServicio.toDTO(habitacion));
     }
 
-   @PostMapping(consumes = "application/json")
-public ResponseEntity<Habitacion> createHabitacion(@RequestBody Habitacion habitacion) {
-    Establecimiento est = establecimientoServicio.findById(habitacion.getEstablecimiento().getId());
-   
-    // Reasociar el objeto persistente antes de guardar
-    habitacion.setEstablecimiento(est);
+        @PostMapping(consumes = "application/json")
+    public ResponseEntity<HabitacionDTO> createHabitacion(@RequestBody HabitacionDTO dto) {
+        Habitacion habitacion = habitacionServicio.toEntity(dto);
+        Habitacion nuevaHabitacion = habitacionServicio.save(habitacion);
+        return ResponseEntity.ok(habitacionServicio.toDTO(nuevaHabitacion));
+    }
 
-    Habitacion nuevaHabitacion = habitacionServicio.save(habitacion);
-    return ResponseEntity.ok(nuevaHabitacion);
-}
-
-    @PutMapping(value = "/{id}", consumes = "application/json")
-    public ResponseEntity<Habitacion> updateHabitacion(@PathVariable int id, @RequestBody Habitacion habitacion) {
+     @PutMapping(value = "/{id}", consumes = "application/json")
+    public ResponseEntity<HabitacionDTO> updateHabitacion(@PathVariable int id, @RequestBody HabitacionDTO dto) {
         if (!habitacionServicio.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+        Habitacion habitacion = habitacionServicio.toEntity(dto);
         habitacion.setId(id);
         Habitacion actualizadaHabitacion = habitacionServicio.save(habitacion);
-        return ResponseEntity.ok(actualizadaHabitacion);
+        return ResponseEntity.ok(habitacionServicio.toDTO(actualizadaHabitacion));
     }
 
     @DeleteMapping("/{id}")

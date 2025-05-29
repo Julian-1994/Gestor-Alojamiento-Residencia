@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from './admin.service';
-import { Reserva } from '../model/reserva.model';
 import { Persona } from '../model/persona.model';
-import { Habitacion } from '../model/habitacion.model';
-import { Establecimiento } from '../model/establecimiento.model';
+import { HabitacionDTO } from '../model/HabitacionDTO.model';
+import { EstablecimientoDTO } from '../model/EstablecimientoDTO.model';
 import { Usuario } from '../model/usuario.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReservaDTO } from '../model/ReservaDTO.model';
 
 @Component({
   selector: 'app-admin',
@@ -17,10 +17,10 @@ import { FormsModule } from '@angular/forms';
 })
 export class AdminComponent implements OnInit {
 
-  reservas: Reserva[] = [];
+  reservas: ReservaDTO[] = [];
   personas: Persona[] = [];
-  habitaciones: Habitacion[] = [];
-  establecimientos: Establecimiento[] = [];
+  habitaciones: HabitacionDTO[] = [];
+  establecimientos: EstablecimientoDTO[] = [];
   usuarios: Usuario[] = [];
 
   // Control de visibilidad para tablas
@@ -53,10 +53,10 @@ export class AdminComponent implements OnInit {
   filtroEstablecimientos = { nombre: '', direccion: '', telefono: '', capacidad: '' };
   filtroUsuarios = { nombreUsuario: '', rol: '', email: '' };
 
-  reservasFiltradas: Reserva[] = [];
+  reservasFiltradas: ReservaDTO[] = [];
   personasFiltradas: Persona[] = [];
-  habitacionesFiltradas: Habitacion[] = [];
-  establecimientosFiltrados: Establecimiento[] = [];
+  habitacionesFiltradas: HabitacionDTO[] = [];
+  establecimientosFiltrados: EstablecimientoDTO[] = [];
   usuariosFiltrados: Usuario[] = [];
   
   cargandoEstablecimientos = true;
@@ -111,8 +111,9 @@ export class AdminComponent implements OnInit {
   abrirNuevo(tipo: string) {
     this.entidadTipo = tipo;
     this.esNuevo = true;
-    this.editandoEntidad = {    persona: this.personas[0], // Asignar la persona adecuada
-      establecimiento: this.habitaciones[0].establecimiento,
+    this.editandoEntidad = {  
+      persona: this.personas[0], // Asignar la persona adecuada
+      establecimiento: this.habitaciones[0].establecimientoId,
       habitacion: this.habitaciones[0],
   
     }; // objeto vacío para rellenar
@@ -161,32 +162,30 @@ export class AdminComponent implements OnInit {
 
   // Añadir entidad usando AdminService
   agregarEntidad() {
-    switch(this.entidadTipo) {
-      case 'reservas':
-    const reservaLimpia = JSON.parse(JSON.stringify(this.editandoEntidad));
+  switch(this.entidadTipo) {
+    case 'reservas':
+      const reservaLimpia = JSON.parse(JSON.stringify(this.editandoEntidad));
 
-      // Remueve propiedades recursivas que no interesan
       if (reservaLimpia.persona?.reservas) {
         delete reservaLimpia.persona.reservas;
       }
 
-      // Si no tiene establecimiento, pero tiene habitación con establecimiento, asignarlo
       if (!reservaLimpia.establecimiento && reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
         reservaLimpia.establecimiento = reservaLimpia.habitacion.establecimiento?.id;
       }
 
-      // Convierte persona, establecimiento y habitación a solo id/dni
       if (reservaLimpia.persona && typeof reservaLimpia.persona === 'object') {
         reservaLimpia.persona = reservaLimpia.persona.dni || reservaLimpia.persona.id || reservaLimpia.persona;
       }
+
       if (reservaLimpia.establecimiento && typeof reservaLimpia.establecimiento === 'object') {
         reservaLimpia.establecimiento = reservaLimpia.establecimiento.id;
       }
+
       if (reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
         reservaLimpia.habitacion = reservaLimpia.habitacion.id;
       }
 
-      // Ajustar fechas (solo fecha, sin tiempo)
       reservaLimpia.fechaEntrada = reservaLimpia.fechaEntrada?.split('T')[0];
       reservaLimpia.fechaSalida = reservaLimpia.fechaSalida?.split('T')[0];
 
@@ -195,8 +194,36 @@ export class AdminComponent implements OnInit {
         error: (err) => { console.error('Error al crear reserva:', err); }
       });
       break;
-    }
+
+    case 'personas':
+      this.adminService.addPersona(this.editandoEntidad).subscribe({
+        next: () => { this.postOperacion(); },
+        error: (err) => { console.error('Error al crear persona:', err); }
+      });
+      break;
+
+    case 'habitaciones':
+      this.adminService.addHabitacion(this.editandoEntidad).subscribe({
+        next: () => { this.postOperacion(); },
+        error: (err) => { console.error('Error al crear habitación:', err); }
+      });
+      break;
+
+    case 'establecimientos':
+      this.adminService.addEstablecimiento(this.editandoEntidad).subscribe({
+        next: () => { this.postOperacion(); },
+        error: (err) => { console.error('Error al crear establecimiento:', err); }
+      });
+      break;
+
+    case 'usuarios':
+      this.adminService.addUsuario(this.editandoEntidad).subscribe({
+        next: () => { this.postOperacion(); },
+        error: (err) => { console.error('Error al crear usuario:', err); }
+      });
+      break;
   }
+}
 
   // Actualizar entidad
   actualizarEntidad() {
@@ -314,7 +341,7 @@ export class AdminComponent implements OnInit {
     const salida = new Date(this.fechaDisponibilidadFin);
 
     this.habitacionesDisponibilidad = this.habitaciones.map(h => {
-      const reservasDeHabitacion = this.reservas.filter(r => r.habitacion.id === h.id);
+      const reservasDeHabitacion = this.reservas.filter(r => r.habitacionId === h.id);
       const ocupada = reservasDeHabitacion.some(r => {
         const rEntrada = new Date(r.fechaEntrada);
         const rSalida = new Date(r.fechaSalida);
@@ -334,8 +361,8 @@ export class AdminComponent implements OnInit {
     const { dni, establecimientoId, fechaDesde, fechaHasta } = this.filtroReservas;
 
     this.reservasFiltradas = this.reservas.filter(r => {
-      const coincideDni = !dni || r.persona?.dni.toLowerCase().includes(dni.toLowerCase());
-      const coincideEstablecimiento = !establecimientoId || r.establecimiento.id.toString().includes(establecimientoId);
+      const coincideDni = !dni || r.personaDni.toLowerCase().includes(dni.toLowerCase());
+      const coincideEstablecimiento = !establecimientoId || r.establecimientoId.toString().includes(establecimientoId);
       
       const fechaEntrada = new Date(r.fechaEntrada);
       const desde = fechaDesde ? new Date(fechaDesde) : null;
@@ -375,7 +402,7 @@ export class AdminComponent implements OnInit {
       (!numero || h.numero.toString().includes(numero)) &&
       (!tipo || h.tipo.toLowerCase().includes(tipo.toLowerCase())) &&
       (!estado || h.estado.toLowerCase().includes(estado.toLowerCase())) &&
-      (!establecimientoId || h.establecimiento.id.toString().includes(establecimientoId))
+      (!establecimientoId || h.establecimientoId.toString().includes(establecimientoId))
     );
   }
 

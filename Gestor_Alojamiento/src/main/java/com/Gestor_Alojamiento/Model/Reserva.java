@@ -8,8 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
-import java.time.LocalDateTime;
+import java.sql.Date;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -46,11 +45,11 @@ public class Reserva {
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime fechaEntrada;
+    private Date fechaEntrada;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime fechaSalida;
+    private Date fechaSalida;
 
     private String motivoEntrada;
     private String observaciones;
@@ -60,7 +59,7 @@ public class Reserva {
     }
 
     public Reserva(int id, Persona persona, Establecimiento establecimiento, Habitacion habitacion,
-                   LocalDateTime fechaEntrada, LocalDateTime fechaSalida, String motivoEntrada, String observaciones) {
+                   Date fechaEntrada, Date fechaSalida, String motivoEntrada, String observaciones) {
         super();
         this.id = id;
         this.persona = persona;
@@ -104,19 +103,19 @@ public class Reserva {
         this.habitacion = habitacion;
     }
 
-    public LocalDateTime getFechaEntrada() {
+    public Date getFechaEntrada() {
         return fechaEntrada;
     }
 
-    public void setFechaEntrada(LocalDateTime fechaEntrada) {
+    public void setFechaEntrada(Date fechaEntrada) {
         this.fechaEntrada = fechaEntrada;
     }
 
-    public LocalDateTime getFechaSalida() {
+    public Date getFechaSalida() {
         return fechaSalida;
     }
 
-    public void setFechaSalida(LocalDateTime fechaSalida) {
+    public void setFechaSalida(Date fechaSalida) {
         this.fechaSalida = fechaSalida;
     }
 

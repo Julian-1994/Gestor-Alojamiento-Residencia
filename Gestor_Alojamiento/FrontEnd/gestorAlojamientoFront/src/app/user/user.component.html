@@ -30,10 +30,9 @@
     </thead>
     <tbody>
       <tr *ngFor="let r of reservasFiltradas">
-        <td>{{ r.id }}</td>
-        <td>{{ r.persona?.dni }}</td>
-        <td>{{ r.establecimiento.id }}</td>
-        <td>{{ r.habitacion.id }}</td>
+        <td>{{ r.personaDni }}</td>
+        <td>{{ r.establecimientoId }}</td>
+        <td>{{ r.habitacionId }}</td>
         <td>{{ r.fechaEntrada | date:'yyyy/MM/dd' }}</td>
         <td>{{ r.fechaSalida | date:'yyyy/MM/dd' }}</td>
         <td>{{ r.motivoEntrada }}</td>
@@ -107,7 +106,7 @@
               <td>{{ h.numero }}</td>
               <td>{{ h.tipo }}</td>
               <td>{{ h.estado }}</td>
-              <td>{{ h.establecimiento.id }}</td>
+              <td>{{ h.establecimientoId }}</td>
               <td>
                 <button class="btn btn-success btn-sm" (click)="reservarHabitacion(h)">Reservar</button>
               </td>
@@ -130,17 +129,17 @@
 
       <form (ngSubmit)="guardar()" #formUser="ngForm">
        <label>Persona DNI</label>
-  <select class="form-control mb-2" [(ngModel)]="editandoEntidad.persona.dni" name="personaDni" required *ngIf="editandoEntidad && editandoEntidad.persona">
+  <select class="form-control mb-2" [(ngModel)]="editandoEntidad.personaDni" name="personaDni" required *ngIf="editandoEntidad && editandoEntidad.personaDni">
     <option *ngFor="let persona of personas" [value]="persona.dni">{{ persona.dni }}</option>
   </select>
 
         <label>Establecimiento ID</label>
-        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" required>
+        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" required>
           <option *ngFor="let establecimiento of establecimientos" [value]="establecimiento.id">{{ establecimiento.id }}</option>
         </select>
 
         <label>Habitación ID</label>
-        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.habitacion.id" name="habitacionId" required>
+        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.habitacionId" name="habitacionId" required>
           <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">{{ habitacion.id }}</option>
         </select>
 

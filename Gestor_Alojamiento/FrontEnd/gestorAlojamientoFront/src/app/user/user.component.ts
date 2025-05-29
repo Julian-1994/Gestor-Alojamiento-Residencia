@@ -5,6 +5,10 @@ import { Persona } from '../model/persona.model';
 import { Habitacion } from '../model/habitacion.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReservaDTO } from '../model/ReservaDTO.model';
+import { HabitacionDTO } from '../model/HabitacionDTO.model';
+import { Establecimiento } from '../model/establecimiento.model';
+import { EstablecimientoDTO } from '../model/EstablecimientoDTO.model';
 
 @Component({
   selector: 'app-user',
@@ -15,17 +19,17 @@ import { FormsModule } from '@angular/forms';
 })
 export class UserComponent implements OnInit {
 
-  reservas: Reserva[] = [];
+  reservas: ReservaDTO[] = [];
   personas: Persona[] = [];
-  habitaciones: Habitacion[] = [];
-  establecimientos: any[] = [];
+  habitaciones: HabitacionDTO[] = [];
+  establecimientos: EstablecimientoDTO[] = [];
   fechaDisponibilidadInicio: string = '';
   fechaDisponibilidadFin: string = '';
-  habitacionesDisponibilidad: Habitacion[] = [];
-  reservasFiltradas: Reserva[] = [];
+  habitacionesDisponibilidad: HabitacionDTO[] = [];
+  reservasFiltradas: ReservaDTO[] = [];
   filtroReservas = { nombre: '', dni: '' };
   buscandoReservas = false;
-  editandoEntidad: Reserva | null = null;
+  editandoEntidad: ReservaDTO | null = null;
   esNuevo: boolean = false;
   mostrarCalendario: boolean = false;
 
@@ -46,18 +50,19 @@ export class UserComponent implements OnInit {
     });
     this.adminService.getHabitaciones().subscribe({
       next: (data) => { 
-        this.habitaciones = data; 
-        this.establecimientos = [...new Set(data.map(h => h.establecimiento))]; // Obtener establecimientos únicos
-      },
+        this.habitaciones = data; },
       error: (err) => { console.error('Error al cargar habitaciones:', err); }
     });
+    this.adminService.getEstablecimientos().subscribe({
+     next: (data) => { this.establecimientos = data; },
+      error: (err) => { console.error('Error al cargar establecimientos:', err); }
+});
   }
 
   aplicarFiltroReservas() {
     const { nombre, dni } = this.filtroReservas;
     this.reservasFiltradas = this.reservas.filter(r =>
-      (!nombre || r.persona?.nombre.toLowerCase().includes(nombre.toLowerCase())) &&
-      (!dni || r.persona?.dni.toLowerCase().includes(dni.toLowerCase()))
+      (!dni || r.personaDni.toLowerCase().includes(dni.toLowerCase()))
     );
   }
 
@@ -71,7 +76,7 @@ export class UserComponent implements OnInit {
     const salida = new Date(this.fechaDisponibilidadFin);
 
     this.habitacionesDisponibilidad = this.habitaciones.map(h => {
-      const reservasDeHabitacion = this.reservas.filter(r => r.habitacion.id === h.id);
+      const reservasDeHabitacion = this.reservas.filter(r => r.habitacionId === h.id);
       const ocupada = reservasDeHabitacion.some(r => {
         const rEntrada = new Date(r.fechaEntrada);
         const rSalida = new Date(r.fechaSalida);
@@ -87,11 +92,12 @@ export class UserComponent implements OnInit {
 
   abrirNuevo() {
     this.esNuevo = true;
-    this.editandoEntidad = {
+    this.editandoEntidad = {  
       id: 0,
-      persona: this.personas[0], // Asignar la persona adecuada
-      establecimiento: this.habitaciones[0].establecimiento,
-      habitacion: this.habitaciones[0],
+      personaDni: this.personas.length > 0 ? this.personas[0].dni : '',
+    establecimientoId: this.habitaciones.length > 0 ? this.habitaciones[0].establecimientoId : 0,
+    habitacionId: this.habitaciones.length > 0 ? this.habitaciones[0].id : 0,
+    
       fechaEntrada: '',
       fechaSalida: '',
       motivoEntrada: '',
@@ -110,16 +116,15 @@ export class UserComponent implements OnInit {
     this.habitacionesDisponibilidad = [];
   }
 
-  reservarHabitacion(habitacion: Habitacion) {
-    const nuevaReserva: Reserva = {
-      id: 0,
-      persona: this.personas[0], // Aquí deberías obtener el DNI del usuario actual
-      establecimiento: habitacion.establecimiento,
-      habitacion: habitacion,
-      fechaEntrada: this.fechaDisponibilidadInicio,
-      fechaSalida: this.fechaDisponibilidadFin,
-      motivoEntrada: '',
-      observaciones: ''
+  reservarHabitacion(habitacion: HabitacionDTO) {
+    const nuevaReserva: ReservaDTO = {
+     personaDni: this.personas.length > 0 ? this.personas[0].dni : '',
+    establecimientoId: habitacion.establecimientoId,
+    habitacionId: habitacion.id,
+    fechaEntrada: this.fechaDisponibilidadInicio,
+    fechaSalida: this.fechaDisponibilidadFin,
+    motivoEntrada: '',
+    observaciones: ''
     };
     this.adminService.addReserva([nuevaReserva]).subscribe({
       next: () => { alert('Reserva creada exitosamente'); this.cargarDatos(); this.cerrarCalendario(); },

@@ -1,10 +1,12 @@
 package DTO;
 
+import com.Gestor_Alojamiento.Model.EstadoHabitacion;
+
 public class HabitacionDTO {
     private int id;
     private String numero;
     private String tipo;
-    private String estado; // puedes usar String para el enum o EstadoHabitacion si quieres
+    private EstadoHabitacion estado; // puedes usar String para el enum o EstadoHabitacion si quieres
 
     // Referencia simplificada al Establecimiento: solo el id o nombre
     private int establecimientoId;
@@ -12,7 +14,7 @@ public class HabitacionDTO {
 
     public HabitacionDTO() {}
 
-    public HabitacionDTO(int id, String numero, String tipo, String estado, int establecimientoId, String establecimientoNombre) {
+    public HabitacionDTO(int id, String numero, String tipo, EstadoHabitacion estado, int establecimientoId) {
         this.id = id;
         this.numero = numero;
         this.tipo = tipo;
@@ -31,8 +33,8 @@ public class HabitacionDTO {
     public String getTipo() { return tipo; }
     public void setTipo(String tipo) { this.tipo = tipo; }
 
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+    public EstadoHabitacion getEstado() { return estado; }
+    public void setEstado(EstadoHabitacion estado) { this.estado = estado; }
 
     public int getEstablecimientoId() { return establecimientoId; }
     public void setEstablecimientoId(int establecimientoId) { this.establecimientoId = establecimientoId; }

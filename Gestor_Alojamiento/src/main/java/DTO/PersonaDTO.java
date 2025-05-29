@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PersonaDTO {
-
+ // Aunque no se usa en requests, es útil para respuestas
     private String dni;
     private String nombre;
     private String apellidos;
@@ -36,6 +36,7 @@ public class PersonaDTO {
         this.reservaIds      = reservaIds;
     }
     // Getters y setters
+
 
     public String getDni() { return dni; }
     public void setDni(String dni) { this.dni = dni; }

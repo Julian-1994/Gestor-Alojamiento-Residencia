@@ -8,6 +8,8 @@ import { Habitacion } from '../model/habitacion.model';
 import { Establecimiento } from '../model/establecimiento.model';
 import { Usuario } from '../model/usuario.model';
 import { ReservaDTO } from '../model/ReservaDTO.model';
+import { EstablecimientoDTO } from '../model/EstablecimientoDTO.model';
+import { HabitacionDTO } from '../model/HabitacionDTO.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +35,9 @@ export class AdminService {
     return '';
   }
   try {
-    return date.toISOString().slice(0,19); // yyyy-MM-ddTHH:mm:ss
+    // Creamos el string yyyy-MM-dd y añadimos T00:00:00
+    const fechaStr = date.toISOString().slice(0, 10);
+    return `${fechaStr}T00:00:00`;
   } catch (error) {
     console.error('Error al convertir fecha:', error);
     return '';
@@ -41,8 +45,8 @@ export class AdminService {
 }
 
   // GET
-  getReservas(): Observable<Reserva[]> {
-    return this.http.get<Reserva[]>(`${this.baseUrl}/reservas`, { withCredentials: true }).pipe(
+  getReservas(): Observable<ReservaDTO[]> {
+    return this.http.get<ReservaDTO[]>(`${this.baseUrl}/reservas`, { withCredentials: true }).pipe(
       map(reservas => reservas.map(reserva => ({
         ...reserva,
         fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
@@ -60,30 +64,20 @@ export class AdminService {
     );
   }
 
-  getHabitaciones(): Observable<Habitacion[]> {
-    return this.http.get<Habitacion[]>(`${this.baseUrl}/habitaciones`, { withCredentials: true });
-  }
+  getEstablecimientos(): Observable<EstablecimientoDTO[]> {
+  return this.http.get<EstablecimientoDTO[]>(`${this.baseUrl}/establecimientos`, { withCredentials: true });
+}
 
-  getEstablecimientos(): Observable<Establecimiento[]> {
-    return this.http.get<Establecimiento[]>(`${this.baseUrl}/establecimientos`, { withCredentials: true });
-  }
+getHabitaciones(): Observable<HabitacionDTO[]> {
+  return this.http.get<HabitacionDTO[]>(`${this.baseUrl}/habitaciones`, { withCredentials: true });
+}
 
   getUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.baseUrl}/usuarios`, { withCredentials: true });
   }
 
-addReserva(reservas: Reserva[]): Observable<any> {
-  const formattedReservas = reservas.map(reserva => ({
-    personaDni: typeof reserva.persona === 'string' ? reserva.persona : reserva.persona?.dni,
-    establecimientoId: typeof reserva.establecimiento === 'number' ? reserva.establecimiento : reserva.establecimiento?.id,
-    habitacionId: typeof reserva.habitacion === 'number' ? reserva.habitacion : reserva.habitacion?.id,
-    fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
-    fechaSalida: this.dateToString(this.convertDateToISO(reserva.fechaSalida)),
-    motivoEntrada: reserva.motivoEntrada,
-    observaciones: reserva.observaciones
-  }));
-
-  return this.http.post(`${this.baseUrl}/reservas`, formattedReservas, {
+addReserva(reservas: ReservaDTO[]): Observable<any> {
+  return this.http.post(`${this.baseUrl}/reservas`, reservas, {
     headers: this.jsonHeaders,
     withCredentials: true
   });
@@ -94,9 +88,9 @@ addReserva(reservas: Reserva[]): Observable<any> {
     return this.http.get<Persona>(`${this.baseUrl}/personas/${dni}`, { withCredentials: true });
   }
 
-  getEstablecimientoById(id: number): Observable<Establecimiento> {
-    return this.http.get<Establecimiento>(`${this.baseUrl}/establecimientos/${id}`, { withCredentials: true });
-  }
+ getEstablecimientoById(id: number): Observable<EstablecimientoDTO> {
+  return this.http.get<EstablecimientoDTO>(`${this.baseUrl}/establecimientos/${id}`, { withCredentials: true });
+}
 
   getHabitacionById(id: number): Observable<Habitacion> {
     return this.http.get<Habitacion>(`${this.baseUrl}/habitaciones/${id}`, { withCredentials: true });
@@ -118,19 +112,12 @@ addReserva(reservas: Reserva[]): Observable<any> {
     });
   }
 
-  addHabitacion(habitacion: Habitacion): Observable<any> {
-    return this.http.post(`${this.baseUrl}/habitaciones`, habitacion, {
-      headers: this.jsonHeaders,
-      withCredentials: true
-    });
-  }
-
-  addEstablecimiento(establecimiento: Establecimiento): Observable<any> {
-    return this.http.post(`${this.baseUrl}/establecimientos`, establecimiento, {
-      headers: this.jsonHeaders,
-      withCredentials: true
-    });
-  }
+ addEstablecimiento(establecimientoDTO: EstablecimientoDTO): Observable<any> {
+  return this.http.post(`${this.baseUrl}/establecimientos`, establecimientoDTO, {
+    headers: this.jsonHeaders,
+    withCredentials: true
+  });
+}
 
   addUsuario(usuario: Usuario): Observable<any> {
     return this.http.post(`${this.baseUrl}/usuarios`, usuario, {
@@ -139,8 +126,16 @@ addReserva(reservas: Reserva[]): Observable<any> {
     });
   }
 
+addHabitacion(habitacionDTO: HabitacionDTO): Observable<any> {
+  return this.http.post(`${this.baseUrl}/habitaciones`, habitacionDTO, {
+    headers: this.jsonHeaders,
+    withCredentials: true
+  });
+}
+
  updateReserva(id: number, reserva: Reserva): Observable<any> {
   const dto: ReservaDTO = {
+    id,
     personaDni:
       typeof reserva.persona === 'string'
         ? reserva.persona
@@ -180,19 +175,20 @@ addReserva(reservas: Reserva[]): Observable<any> {
     });
   }
 
-  updateHabitacion(id: number, habitacion: Habitacion): Observable<any> {
-    return this.http.put(`${this.baseUrl}/habitaciones/${id}`, habitacion, {
+  updateHabitacion(id: number, habitacionDTO: HabitacionDTO): Observable<any> {
+    return this.http.put(`${this.baseUrl}/habitaciones/${id}`, habitacionDTO, {
       headers: this.jsonHeaders,
       withCredentials: true
     });
   }
 
-  updateEstablecimiento(id: number, establecimiento: Establecimiento): Observable<any> {
-    return this.http.put(`${this.baseUrl}/establecimientos/${id}`, establecimiento, {
-      headers: this.jsonHeaders,
-      withCredentials: true
-    });
-  }
+  updateEstablecimiento(id: number, establecimientoDTO: EstablecimientoDTO): Observable<any> {
+  return this.http.put(`${this.baseUrl}/establecimientos/${id}`, establecimientoDTO, {
+    headers: this.jsonHeaders,
+    withCredentials: true
+  });
+}
+
 
   updateUsuario(id: number, usuario: Usuario): Observable<any> {
     return this.http.put(`${this.baseUrl}/usuarios/${id}`, usuario, {
@@ -223,7 +219,10 @@ addReserva(reservas: Reserva[]): Observable<any> {
   }
 
   // GET Habitaciones Disponibles
-  getHabitacionesDisponibles(fechaEntrada: string, fechaSalida: string): Observable<Habitacion[]> {
-    return this.http.get<Habitacion[]>(`${this.baseUrl}/habitaciones/disponibles?}`, { withCredentials: true });
-  }
+ getHabitacionesDisponibles(fechaEntrada: string, fechaSalida: string): Observable<Habitacion[]> {
+  return this.http.get<Habitacion[]>(
+    `${this.baseUrl}/habitaciones/disponibles?fechaEntrada=${fechaEntrada}&fechaSalida=${fechaSalida}`,
+    { withCredentials: true }
+  );
+}
 }

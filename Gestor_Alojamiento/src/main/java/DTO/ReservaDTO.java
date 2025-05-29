@@ -1,10 +1,10 @@
 package DTO;
 
-import java.time.LocalDateTime;
-
+import java.sql.Date;
 
 public class ReservaDTO {
 
+    private int id;
     // Información simplificada de Persona (podría ser solo id o id + nombre)
     private String personaDni;
 
@@ -15,15 +15,15 @@ public class ReservaDTO {
     // Información simplificada de Habitacion
     private int habitacionId;
 
-    private LocalDateTime fechaEntrada;
-    private LocalDateTime fechaSalida;
+    private Date fechaEntrada;
+    private Date fechaSalida;
     private String motivoEntrada;
     private String observaciones;
 
     public ReservaDTO() {}
 
     public ReservaDTO( String personaDni,  int establecimientoId,
-                      int habitacionId, String habitacionNumero, LocalDateTime fechaEntrada, LocalDateTime fechaSalida,
+                      int habitacionId, String habitacionNumero, Date fechaEntrada, Date fechaSalida,
                       String motivoEntrada, String observaciones) {
        
         this.personaDni = personaDni;
@@ -38,6 +38,9 @@ public class ReservaDTO {
     // Getters y setters
 
 
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
     public String getPersonaDni() { return personaDni; }
     public void setPersonaDni(String personaDni) { this.personaDni = personaDni; }
 
@@ -48,11 +51,11 @@ public class ReservaDTO {
     public int getHabitacionId() { return habitacionId; }
     public void setHabitacionId(int habitacionId) { this.habitacionId = habitacionId; }
 
-    public LocalDateTime getFechaEntrada() { return fechaEntrada; }
-    public void setFechaEntrada(LocalDateTime fechaEntrada) { this.fechaEntrada = fechaEntrada; }
+    public Date getFechaEntrada() { return fechaEntrada; }
+    public void setFechaEntrada(Date fechaEntrada) { this.fechaEntrada = fechaEntrada; }
 
-    public LocalDateTime getFechaSalida() { return fechaSalida; }
-    public void setFechaSalida(LocalDateTime fechaSalida) { this.fechaSalida = fechaSalida; }
+    public Date getFechaSalida() { return fechaSalida; }
+    public void setFechaSalida(Date fechaSalida) { this.fechaSalida = fechaSalida; }
 
     public String getMotivoEntrada() { return motivoEntrada; }
     public void setMotivoEntrada(String motivoEntrada) { this.motivoEntrada = motivoEntrada; }

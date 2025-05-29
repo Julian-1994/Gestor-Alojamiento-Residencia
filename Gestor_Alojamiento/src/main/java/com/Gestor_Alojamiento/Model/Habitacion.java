@@ -122,5 +122,8 @@ public class Habitacion {
 					&& id == other.id && Objects.equals(numero, other.numero) && Objects.equals(tipo, other.tipo);
 		}
 
+
+
+
 	
 }
