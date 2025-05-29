@@ -48,7 +48,13 @@ public class PersonaDTO {
     public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
     public Date getFechaNacimiento() { return fechaNacimiento; }
-    public void setFechaNacimiento(Date fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
+    public void setFechaNacimiento(java.util.Date fechaNacimiento) { 
+        if (fechaNacimiento != null) {
+            this.fechaNacimiento = new java.sql.Date(fechaNacimiento.getTime());
+        } else {
+            this.fechaNacimiento = null;
+        }
+    }
 
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }

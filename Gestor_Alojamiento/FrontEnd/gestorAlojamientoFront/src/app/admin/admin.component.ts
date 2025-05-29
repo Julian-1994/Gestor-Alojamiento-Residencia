@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from './admin.service';
-import { Persona } from '../model/persona.model';
+import { PersonaDTO } from '../model/PersonaDTO.model';
 import { HabitacionDTO } from '../model/HabitacionDTO.model';
 import { EstablecimientoDTO } from '../model/EstablecimientoDTO.model';
 import { Usuario } from '../model/usuario.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReservaDTO } from '../model/ReservaDTO.model';
+
+declare var $: any; // Importante para usar jQuery/Select2
 
 @Component({
   selector: 'app-admin',
@@ -18,7 +20,7 @@ import { ReservaDTO } from '../model/ReservaDTO.model';
 export class AdminComponent implements OnInit {
 
   reservas: ReservaDTO[] = [];
-  personas: Persona[] = [];
+  personas: PersonaDTO[] = [];
   habitaciones: HabitacionDTO[] = [];
   establecimientos: EstablecimientoDTO[] = [];
   usuarios: Usuario[] = [];
@@ -31,7 +33,7 @@ export class AdminComponent implements OnInit {
   mostrarUsuarios = false;
 
   // Variables para formularios de edición/añadir
-  editandoEntidad: any = null;   // objeto actual para editar
+  editandoEntidad: any = null;   // objeto actual para editar (siempre DTO)
   entidadTipo: string = '';      // reserva, persona, habitacion, etc.
   esNuevo: boolean = false;      // si es añadir o editar
 
@@ -52,15 +54,17 @@ export class AdminComponent implements OnInit {
   filtroHabitaciones = { numero: '', tipo: '', estado: '', establecimientoId: '' };
   filtroEstablecimientos = { nombre: '', direccion: '', telefono: '', capacidad: '' };
   filtroUsuarios = { nombreUsuario: '', rol: '', email: '' };
+  filtroPersonaReserva: string = '';
 
   reservasFiltradas: ReservaDTO[] = [];
-  personasFiltradas: Persona[] = [];
+  personasFiltradas: PersonaDTO[] = [];
   habitacionesFiltradas: HabitacionDTO[] = [];
   establecimientosFiltrados: EstablecimientoDTO[] = [];
+  establecimientoDisponibilidadId: number | undefined = undefined;
   usuariosFiltrados: Usuario[] = [];
+  habitacionesFiltradasPorEstablecimiento: HabitacionDTO[] = [];
   
   cargandoEstablecimientos = true;
-
 
   constructor(private adminService: AdminService) {}
 
@@ -111,12 +115,62 @@ export class AdminComponent implements OnInit {
   abrirNuevo(tipo: string) {
     this.entidadTipo = tipo;
     this.esNuevo = true;
-    this.editandoEntidad = {  
-      persona: this.personas[0], // Asignar la persona adecuada
-      establecimiento: this.habitaciones[0].establecimientoId,
-      habitacion: this.habitaciones[0],
+    switch(tipo) {
+      case 'reservas':
+          const primerEstablecimientoId = this.establecimientos[0]?.id || 0;
+          this.editandoEntidad = {
+          personaDni: this.personas[0]?.dni || '',
+          establecimientoId: this.establecimientos[0]?.id || 0,
+          habitacionId: 0,
+          fechaEntrada: '',
+          fechaSalida: '',
+          motivoEntrada: '',
+          observaciones: ''
+        } as ReservaDTO;
+            this.filtrarHabitacionesPorEstablecimiento(primerEstablecimientoId);
+            this.editandoEntidad.habitacionId = null;
+                 setTimeout(() => this.initSelect2Persona(), 0);
+
+        break;
+      case 'personas':
+        this.editandoEntidad = {
+          dni: '',
+          nombre: '',
+          apellidos: '',
+          fechaNacimiento: '',
+          telefono: '',
+          email: ''
+        } as PersonaDTO;
+        break;
+      case 'habitaciones':
+        this.editandoEntidad = {
+          id: 0,
+          numero: '',
+          tipo: '',
+          estado: 'DISPONIBLE', // Usa un valor válido de EstadoHabitacion
+          establecimientoId: this.establecimientos[0]?.id || 0,
+        } as HabitacionDTO;
+        break;
   
-    }; // objeto vacío para rellenar
+      case 'establecimientos':
+        this.editandoEntidad = {
+          id: 0,
+          nombre: '',
+          direccion: '',
+          telefono: '',
+          capacidad: 0
+        } as EstablecimientoDTO;
+        break;
+      case 'usuarios':
+        this.editandoEntidad = {
+          id: 0,
+          nombreUsuario: '',
+          contrasenya: '',
+          rol: '',
+          email: ''
+        } as Usuario;
+        break;
+    }
   }
 
   // Abrir formulario para editar
@@ -124,140 +178,157 @@ export class AdminComponent implements OnInit {
     this.entidadTipo = tipo;
     this.esNuevo = false;
     this.editandoEntidad = { ...entidad }; // clonar objeto para no editar original directo
-    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones'|| this.entidadTipo === 'personas') {
-    if (!this.editandoEntidad.establecimiento) {
-      this.editandoEntidad.establecimiento = {};
-    }
-    if(!this.editandoEntidad.habitacion){
-      this.editandoEntidad.habitacion = {};
-    }
-    if(!this.editandoEntidad.persona){
-      this.editandoEntidad.persona = {};
-    }
-    
+   if (tipo === 'reservas') {
+       this.filtrarHabitacionesPorEstablecimiento(this.editandoEntidad.establecimientoId);
+    setTimeout(() => this.initSelect2Persona(), 0);
   }
+  }
+  onEstablecimientoReservaChange() {
+  this.filtrarHabitacionesPorEstablecimiento(this.editandoEntidad.establecimientoId);
+  this.editandoEntidad.habitacionId = null; // Limpia la selección de habitación
 }
 
-
+abrirReservaTrasRecarga() {
+  this.adminService.getHabitaciones().subscribe({
+    next: (data) => {
+      this.habitaciones = data;
+      this.habitacionesFiltradas = data;
+      // Ahora sí, abre el modal de reserva
+      this.abrirNuevo('reservas');
+    },
+    error: (err) => { console.error('Error al recargar habitaciones:', err); }
+  });
+}
+// Inicializa Select2 para el select de persona DNI
+  initSelect2Persona() {
+    const select = $('#select-persona-dni');
+    select.off('change').select2({
+      width: '100%',
+      placeholder: 'Buscar por DNI o nombre',
+      dropdownParent: select.closest('.modal')
+    });
+    // Set value si ya hay uno seleccionado
+    if (this.editandoEntidad?.personaDni) {
+      select.val(this.editandoEntidad.personaDni).trigger('change');
+    }
+    // Actualiza el modelo Angular al cambiar
+    select.on('change', (e: any) => {
+      this.editandoEntidad.personaDni = e.target.value;
+    });
+  }
 
   // Guardar cambios (añadir o editar)
   guardar() {
     if (this.esNuevo) {
-    if (this.entidadTipo === 'reservas' || this.entidadTipo === 'habitaciones'|| this.entidadTipo === 'personas') {
-    if (!this.editandoEntidad.establecimiento) {
-      this.editandoEntidad.establecimiento = {};
+      this.agregarEntidad();
+    } else {
+      this.actualizarEntidad();
     }
-    if(!this.editandoEntidad.habitacion){
-      this.editandoEntidad.habitacion = {};
-    }
-    if(!this.editandoEntidad.persona){
-      this.editandoEntidad.persona = {};
-    }
-    }
-    this.agregarEntidad();
-  } else {
-    this.actualizarEntidad();
   }
-}
 
   // Añadir entidad usando AdminService
   agregarEntidad() {
-  switch(this.entidadTipo) {
-    case 'reservas':
-      const reservaLimpia = JSON.parse(JSON.stringify(this.editandoEntidad));
+    switch(this.entidadTipo) {
+      case 'reservas':
+        // Solo los campos del DTO
+        const reservaDTO: ReservaDTO = {
+          personaDni: this.editandoEntidad.personaDni,
+          establecimientoId: this.editandoEntidad.establecimientoId,
+          habitacionId: this.editandoEntidad.habitacionId,
+          fechaEntrada: this.editandoEntidad.fechaEntrada,
+          fechaSalida: this.editandoEntidad.fechaSalida,
+          motivoEntrada: this.editandoEntidad.motivoEntrada,
+          observaciones: this.editandoEntidad.observaciones
+        };
+        this.adminService.addReserva([reservaDTO]).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear reserva:', err); }
+        });
+        break;
 
-      if (reservaLimpia.persona?.reservas) {
-        delete reservaLimpia.persona.reservas;
-      }
+      case 'personas':
+        const personaDTO: PersonaDTO = {
+          dni: this.editandoEntidad.dni,
+          nombre: this.editandoEntidad.nombre,
+          apellidos: this.editandoEntidad.apellidos,
+          fechaNacimiento: this.editandoEntidad.fechaNacimiento,
+          telefono: this.editandoEntidad.telefono,
+          email: this.editandoEntidad.email
+        };
+        this.adminService.addPersona(personaDTO).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear persona:', err); }
+        });
+        break;
 
-      if (!reservaLimpia.establecimiento && reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
-        reservaLimpia.establecimiento = reservaLimpia.habitacion.establecimiento?.id;
-      }
-
-      if (reservaLimpia.persona && typeof reservaLimpia.persona === 'object') {
-        reservaLimpia.persona = reservaLimpia.persona.dni || reservaLimpia.persona.id || reservaLimpia.persona;
-      }
-
-      if (reservaLimpia.establecimiento && typeof reservaLimpia.establecimiento === 'object') {
-        reservaLimpia.establecimiento = reservaLimpia.establecimiento.id;
-      }
-
-      if (reservaLimpia.habitacion && typeof reservaLimpia.habitacion === 'object') {
-        reservaLimpia.habitacion = reservaLimpia.habitacion.id;
-      }
-
-      reservaLimpia.fechaEntrada = reservaLimpia.fechaEntrada?.split('T')[0];
-      reservaLimpia.fechaSalida = reservaLimpia.fechaSalida?.split('T')[0];
-
-      this.adminService.addReserva([reservaLimpia]).subscribe({
-        next: () => { this.postOperacion(); },
-        error: (err) => { console.error('Error al crear reserva:', err); }
-      });
-      break;
-
-    case 'personas':
-      this.adminService.addPersona(this.editandoEntidad).subscribe({
-        next: () => { this.postOperacion(); },
-        error: (err) => { console.error('Error al crear persona:', err); }
-      });
-      break;
-
-    case 'habitaciones':
-      this.adminService.addHabitacion(this.editandoEntidad).subscribe({
-        next: () => { this.postOperacion(); },
-        error: (err) => { console.error('Error al crear habitación:', err); }
-      });
-      break;
-
-    case 'establecimientos':
-      this.adminService.addEstablecimiento(this.editandoEntidad).subscribe({
-        next: () => { this.postOperacion(); },
-        error: (err) => { console.error('Error al crear establecimiento:', err); }
-      });
-      break;
-
-    case 'usuarios':
-      this.adminService.addUsuario(this.editandoEntidad).subscribe({
-        next: () => { this.postOperacion(); },
-        error: (err) => { console.error('Error al crear usuario:', err); }
-      });
-      break;
+      case 'habitaciones':
+        if (!this.editandoEntidad.numero || this.editandoEntidad.numero.trim() === '') {
+    alert('Debes introducir un número de habitación');
+    return;
   }
-}
+  if (!this.editandoEntidad.establecimientoId || this.editandoEntidad.establecimientoId === 0) {
+    alert('Debes seleccionar un establecimiento');
+    return;
+  }
+  if (!['DISPONIBLE', 'OCUPADA'].includes(this.editandoEntidad.estado)) {
+    alert('Debes seleccionar un estado válido');
+    return;
+  }
+  if (!['Individual', 'Doble'].includes(this.editandoEntidad.tipo)) {
+    alert('Debes seleccionar un tipo válido');
+    return;
+  }
+        this.adminService.addHabitacion(this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear habitación:', err); }
+        });
+        break;
+
+      case 'establecimientos':
+        this.adminService.addEstablecimiento(this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear establecimiento:', err); }
+        });
+        break;
+
+      case 'usuarios':
+        this.adminService.addUsuario(this.editandoEntidad).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al crear usuario:', err); }
+        });
+        break;
+    }
+  }
 
   // Actualizar entidad
   actualizarEntidad() {
     switch(this.entidadTipo) {
       case 'reservas':
-        const reservaActualizada = JSON.parse(JSON.stringify(this.editandoEntidad));
-
-  if (reservaActualizada.persona?.reservas) {
-    delete reservaActualizada.persona.reservas;
-  }
-
-  if (reservaActualizada.establecimiento && typeof reservaActualizada.establecimiento === 'object') {
-    reservaActualizada.establecimiento = reservaActualizada.establecimiento.id;
-  }
-
-  if (reservaActualizada.habitacion && typeof reservaActualizada.habitacion === 'object') {
-    reservaActualizada.habitacion = reservaActualizada.habitacion.id;
-  }
-
-  if (reservaActualizada.fechaEntrada?.includes('T')) {
-    reservaActualizada.fechaEntrada = reservaActualizada.fechaEntrada.split('T')[0];
-  }
-
-  if (reservaActualizada.fechaSalida?.includes('T')) {
-    reservaActualizada.fechaSalida = reservaActualizada.fechaSalida.split('T')[0];
-  }
-
-  this.adminService.updateReserva(reservaActualizada.id, reservaActualizada).subscribe({
-    next: () => { this.postOperacion(); },
-    error: (err) => { console.error('Error al actualizar reserva:', err); }
-  });
-  break;
+        const reservaDTO: ReservaDTO = {
+          id: this.editandoEntidad.id,
+          personaDni: this.editandoEntidad.personaDni,
+          establecimientoId: this.editandoEntidad.establecimientoId,
+          habitacionId: this.editandoEntidad.habitacionId,
+          fechaEntrada: this.editandoEntidad.fechaEntrada,
+          fechaSalida: this.editandoEntidad.fechaSalida,
+          motivoEntrada: this.editandoEntidad.motivoEntrada,
+          observaciones: this.editandoEntidad.observaciones
+        };
+        this.adminService.updateReserva(reservaDTO.id!, reservaDTO).subscribe({
+          next: () => { this.postOperacion(); },
+          error: (err) => { console.error('Error al actualizar reserva:', err); }
+        });
+        break;
       case 'personas':
-        this.adminService.updatePersona(this.editandoEntidad.dni, this.editandoEntidad).subscribe({
+        const personaDTO: PersonaDTO = {
+          dni: this.editandoEntidad.dni,
+          nombre: this.editandoEntidad.nombre,
+          apellidos: this.editandoEntidad.apellidos,
+          fechaNacimiento: this.editandoEntidad.fechaNacimiento,
+          telefono: this.editandoEntidad.telefono,
+          email: this.editandoEntidad.email
+        };
+        this.adminService.updatePersona(personaDTO.dni, personaDTO).subscribe({
           next: () => { this.postOperacion(); },
           error: (err) => { console.error('Error al actualizar persona:', err); }
         });
@@ -335,25 +406,52 @@ export class AdminComponent implements OnInit {
     this.esNuevo = false;
   }
 
+  filtrarHabitacionesPorEstablecimiento(establecimientoId: number) {
+  this.habitacionesFiltradasPorEstablecimiento = this.habitaciones.filter(
+    h => h.establecimientoId === establecimientoId
+  );
+}
   // Comprobar disponibilidad
   verDisponibilidadHabitaciones() {
+    if (!this.establecimientoDisponibilidadId || !this.fechaDisponibilidadInicio || !this.fechaDisponibilidadFin) {
+    alert('Debe seleccionar establecimiento y fechas');
+    return;
+  }
     const entrada = new Date(this.fechaDisponibilidadInicio);
     const salida = new Date(this.fechaDisponibilidadFin);
 
-    this.habitacionesDisponibilidad = this.habitaciones.map(h => {
-      const reservasDeHabitacion = this.reservas.filter(r => r.habitacionId === h.id);
-      const ocupada = reservasDeHabitacion.some(r => {
-        const rEntrada = new Date(r.fechaEntrada);
-        const rSalida = new Date(r.fechaSalida);
-        return entrada < rSalida && salida > rEntrada;
-      });
+     // Filtra habitaciones por establecimiento
+  const habitacionesEst = this.habitaciones.filter(h => h.establecimientoId === this.establecimientoDisponibilidadId);
+    if (habitacionesEst.length === 0) {
+      alert('No hay habitaciones en este establecimiento');
+      return;
+    }
+    if (entrada >= salida) {
+      alert('La fecha de entrada debe ser anterior a la de salida');
+      return;
+    }
+    // Filtra reservas por establecimiento y fechas
 
-      return {
-        ...h,
-        estadoActual: ocupada ? 'Ocupada' : 'Disponible'
-      };
+    this.habitacionesDisponibilidad = habitacionesEst.map(h => {
+    const reservasDeHabitacion = this.reservas.filter(r => r.habitacionId === h.id);
+    const ocupada = reservasDeHabitacion.some(r => {
+      const rEntrada = new Date(r.fechaEntrada);
+      const rSalida = new Date(r.fechaSalida);
+      return entrada < rSalida && salida > rEntrada;
     });
-  }
+    return {
+      ...h,
+      estadoActual: ocupada ? 'Ocupada' : 'Disponible'
+    };
+  });
+  this.mostrarHabitaciones = false;
+}
+
+// Botón para volver a la tabla completa de habitaciones
+verTodasHabitaciones() {
+  this.habitacionesDisponibilidad = [];
+  this.mostrarHabitaciones = true;
+}
 
   // Filtros y reset para cada entidad
   aplicarFiltroReservas() {
@@ -444,4 +542,37 @@ export class AdminComponent implements OnInit {
     this.buscandoUsuarios = false;
     this.usuariosFiltrados = [...this.usuarios];
   }
+
+  // Mostrar nombre de persona en una reserva (en la tabla)
+  getNombrePersonaDeReserva(reserva: ReservaDTO): string {
+    const persona = this.personas.find(p => p.dni === reserva.personaDni);
+    return persona ? `${persona.nombre} ${persona.apellidos}` : reserva.personaDni;
+  }
+
+  // Mostrar nombre de establecimiento en una reserva
+  getNombreEstablecimientoDeReserva(reserva: ReservaDTO): string {
+    const est = this.establecimientos.find(e => e.id === reserva.establecimientoId);
+    return est ? est.nombre : reserva.establecimientoId.toString();
+  }
+
+  // Mostrar número de habitación en una reserva
+  getNumeroHabitacionDeReserva(reserva: ReservaDTO): string {
+    const hab = this.habitaciones.find(h => h.id === reserva.habitacionId);
+    return hab ? hab.numero.toString() : reserva.habitacionId.toString();
+  }
+
+  // Devuelve el nombre del establecimiento dado su ID
+
+getEstablecimientoNombre(id: number): string {
+  const est = this.establecimientos?.find((e: any) => e.id === id);
+  return est ? est.nombre : id.toString();
+}
+getPersonasFiltradasReserva() {
+  if (!this.filtroPersonaReserva) return this.personas;
+  const filtro = this.filtroPersonaReserva.toLowerCase();
+  return this.personas.filter(p =>
+    p.dni.toLowerCase().includes(filtro) ||
+    p.nombre.toLowerCase().includes(filtro)
+  );
+}
 }

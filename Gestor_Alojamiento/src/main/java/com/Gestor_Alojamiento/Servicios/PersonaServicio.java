@@ -38,6 +38,7 @@ public class PersonaServicio {
         dto.setDni(persona.getDni());
         dto.setNombre(persona.getNombre());
         dto.setApellidos(persona.getApellidos());
+        dto.setFechaNacimiento(persona.getFechaNacimiento() != null ? new java.sql.Date(persona.getFechaNacimiento().getTime()) : null);
         dto.setTelefono(persona.getTelefono());
         dto.setEmail(persona.getEmail());
         // Añade más campos si tu DTO los tiene
@@ -52,8 +53,15 @@ public class PersonaServicio {
         persona.setApellidos(dto.getApellidos());
         persona.setTelefono(dto.getTelefono());
         persona.setEmail(dto.getEmail());
-        // Añade más campos si tu entidad los tiene
-        return persona;
+        // Conversión de String o Date a java.sql.Date
+    if (dto.getFechaNacimiento() != null) {
+        // Si tu DTO tiene java.sql.Date, esto es suficiente:
+        persona.setFechaNacimiento(dto.getFechaNacimiento());
+        // Si tu DTO tiene String, usa:
+        // persona.setFechaNacimiento(java.sql.Date.valueOf(dto.getFechaNacimiento().substring(0, 10)));
+    }
+    return persona;
+
     }
 
     // Guardar desde DTO
@@ -98,6 +106,6 @@ public class PersonaServicio {
                 .toList();
     }
 
-    
+
 }
 

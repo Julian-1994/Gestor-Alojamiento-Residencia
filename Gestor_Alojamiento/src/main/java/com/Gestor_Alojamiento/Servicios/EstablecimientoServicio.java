@@ -81,6 +81,8 @@ public Establecimiento updateFromDTO(int id, EstablecimientoDTO dto) {
     }
     existente.setNombre(dto.getNombre());
     existente.setDireccion(dto.getDireccion());
+    existente.setTelefono(dto.getTelefono());   
+    existente.setCapacidad(dto.getCapacidad());
     return save(existente);
 }
 

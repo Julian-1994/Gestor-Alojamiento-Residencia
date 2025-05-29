@@ -2,8 +2,6 @@ package com.Gestor_Alojamiento.Model;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +17,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class Persona {
     
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, unique = true)
     private String dni;
 

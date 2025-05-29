@@ -1,20 +1,22 @@
-<div class="bg-primary-subtle p-5 w-100 mb-5">
+
+<div class="bg-primary-subtle p-5 w-100 mb-5 shadow-lg rounded-4 header-admin">
   <div class="row align-items-center">
     <!-- Imagen a la izquierda -->
     <div class="col-2 text-start">
-   <img src="./R (2).png" alt="Logo" width="80" height="80">
+   <img src="./R (2).png" alt="Logo" width="130" height="130">
     </div>
 
     <!-- Título centrado -->
     <div class="col-8 text-center">
-      <h1 class="m-0">Panel de administración</h1>
+      <h1 class="m-0 mb-5">Panel de administración</h1>
+      <h5 class="text-center">Gestor de Residencias</h5>
     </div>
 
     <!-- Columna vacía para equilibrar -->
     <div class="col-2"></div>
   </div>
 </div>
-<h4 class="mb-5 text-center">Gestión de Residencias</h4>
+<div class="container">
 
 <div class="d-flex justify-content-center mb-4">
   <nav class="nav nav-tabs">
@@ -29,29 +31,29 @@
 <!-- Tabla Reservas -->
 <div *ngIf="mostrarReservas" class="mb-5">
   <h2 class="text-center">Reservas</h2>
-  <button class="btn btn-success mb-3" (click)="abrirNuevo('reservas')">Añadir Reserva</button>
+  <button class="btn btn-success mb-3" (click)="abrirReservaTrasRecarga()">Añadir Reserva</button>
 
   <!-- Filtros -->
-  <div class="row g-2 mb-3">
+  <div class="row g-2 mb-4">
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroReservas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroReservas()">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroReservas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroReservas()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroReservas.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroReservas()">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroReservas.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroReservas()">
     </div>
     <div class="col-md">
-      <input class="form-control" type="date" [(ngModel)]="filtroReservas.fechaDesde" (change)="aplicarFiltroReservas()">
+      <input class="form-control shadow-sm " type="date" [(ngModel)]="filtroReservas.fechaDesde" (change)="aplicarFiltroReservas()">
     </div>
     <div class="col-md">
-      <input class="form-control" type="date" [(ngModel)]="filtroReservas.fechaHasta" (change)="aplicarFiltroReservas()">
+      <input class="form-control shadow-sm" type="date" [(ngModel)]="filtroReservas.fechaHasta" (change)="aplicarFiltroReservas()">
     </div>
   </div>
 
   <!-- Tabla o mensaje -->
   <div *ngIf="reservasFiltradas.length > 0 || !buscandoReservas; else sinResultadosReservas">
-    <table class="table table-bordered text-center">
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
       <thead class="table-light">
-        <tr>
+        <tr> 
           <th>ID</th>
           <th>Persona DNI</th>
           <th>Establecimiento ID</th>
@@ -99,19 +101,19 @@
   <!-- Filtros -->
   <div class="row g-2 mb-3">
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroPersonas.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroPersonas()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroPersonas.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroPersonas()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroPersonas.apellidos" placeholder="Buscar por apellidos" (input)="aplicarFiltroPersonas()">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroPersonas.apellidos" placeholder="Buscar por apellidos" (input)="aplicarFiltroPersonas()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroPersonas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroPersonas()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroPersonas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroPersonas()">
     </div>
   </div>
 
   <!-- Tabla o mensaje -->
   <div *ngIf="personasFiltradas.length > 0 || !buscandoPersonas; else sinResultadosPersonas">
-    <table class="table table-bordered text-center">
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
       <thead class="table-light">
         <tr>
           <th>Nombre</th>
@@ -155,45 +157,59 @@
   <button class="btn btn-success mb-2" (click)="abrirNuevo('habitaciones')">Añadir Habitación</button>
 
   <!-- Filtros -->
-  <div class="row g-2 mb-3">
+  <div *ngIf="habitacionesDisponibilidad.length === 0" class="row g-2 mb-3">
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroHabitaciones.numero" placeholder="Buscar por número" (input)="aplicarFiltroHabitaciones()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.numero" placeholder="Buscar por número" (input)="aplicarFiltroHabitaciones()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroHabitaciones.tipo" placeholder="Buscar por tipo" (input)="aplicarFiltroHabitaciones()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.tipo" placeholder="Buscar por tipo" (input)="aplicarFiltroHabitaciones()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroHabitaciones.estado" placeholder="Buscar por estado" (input)="aplicarFiltroHabitaciones()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.estado" placeholder="Buscar por estado" (input)="aplicarFiltroHabitaciones()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroHabitaciones.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroHabitaciones()">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroHabitaciones.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroHabitaciones()">
     </div>
   </div>
 
   <!-- Ver disponibilidad -->
-  <div class="mb-4 border p-3 rounded bg-light text-center">
-    <h5 class="mb-3">Ver disponibilidad de habitaciones por fecha</h5>
-    <div class="d-flex justify-content-center align-items-end gap-3 flex-wrap">
-      <div>
-        <label>Fecha Entrada</label>
-        <input type="date" class="form-control" [(ngModel)]="fechaDisponibilidadInicio">
-      </div>
-      <div>
-        <label>Fecha Salida</label>
-        <input type="date" class="form-control" [(ngModel)]="fechaDisponibilidadFin">
-      </div>
-      <div>
-        <button class="btn btn-primary" (click)="verDisponibilidadHabitaciones()" [disabled]="!fechaDisponibilidadInicio || !fechaDisponibilidadFin">
-          Ver Disponibilidad
-        </button>
-      </div>
+<div class="mb-4 border p-3 rounded bg-light text-center">
+  <h5 class="mb-3">Ver disponibilidad de habitaciones por fecha</h5>
+  <div class="d-flex justify-content-center align-items-end gap-3 flex-wrap">
+    <label>Establecimiento</label>
+    <select class="form-control shadow-sm " [(ngModel)]="establecimientoDisponibilidadId">
+      <option [ngValue]="undefined" disabled selected>Seleccione un establecimiento</option>
+      <option *ngFor="let est of establecimientos" [ngValue]="est.id">{{ est.nombre }}</option>
+    </select>
+    <div>
+      <label>Fecha Entrada</label>
+      <input type="date" class="form-control shadow-sm " [(ngModel)]="fechaDisponibilidadInicio">
+    </div>
+    <div>
+      <label>Fecha Salida</label>
+      <input type="date" class="form-control shadow-sm" [(ngModel)]="fechaDisponibilidadFin">
+    </div>
+    <div>
+      <button class="btn btn-primary" type="button"
+        (click)="verDisponibilidadHabitaciones()"
+        [disabled]="!fechaDisponibilidadInicio || !fechaDisponibilidadFin || !establecimientoDisponibilidadId">
+        Ver Disponibilidad
+      </button>
+      <!-- Botón para volver, solo si la tabla de disponibilidad está activa -->
+      <button *ngIf="habitacionesDisponibilidad.length > 0"
+        class="btn btn-secondary ms-2"
+        type="button"
+        (click)="verTodasHabitaciones()">
+        Ver todas las habitaciones
+      </button>
     </div>
   </div>
+</div>
 
   <!-- Tabla de disponibilidad -->
   <div *ngIf="habitacionesDisponibilidad.length > 0" class="mt-4">
     <h5>Estado de habitaciones entre {{ fechaDisponibilidadInicio }} y {{ fechaDisponibilidadFin }}</h5>
-    <table class="table table-bordered text-center">
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
       <thead class="table-light">
         <tr>
           <th>ID</th>
@@ -205,21 +221,21 @@
       </thead>
       <tbody>
         <tr *ngFor="let h of habitacionesDisponibilidad">
-          <td>{{ h.id }}</td>
-          <td>{{ h.numero }}</td>
-          <td>{{ h.tipo }}</td>
-          <td [ngClass]="{ 'text-success': h.estadoActual === 'Disponible', 'text-danger': h.estadoActual === 'Ocupada' }">
-            {{ h.estadoActual }}
-          </td>
-          <td>{{ h.establecimiento.id }}</td>
-        </tr>
+        <td>{{ h.id }}</td>
+        <td>{{ h.numero }}</td>
+        <td>{{ h.tipo }}</td>
+        <td [ngClass]="{ 'text-success': h.estadoActual === 'Disponible', 'text-danger': h.estadoActual === 'Ocupada' }">
+          {{ h.estadoActual }}
+        </td>
+        <td>{{ getEstablecimientoNombre(h.establecimientoId) }}</td>
+      </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Tabla principal o mensaje -->
-  <div *ngIf="habitacionesFiltradas.length > 0 || !buscandoHabitaciones; else sinResultadosHabitaciones">
-    <table class="table table-bordered text-center">
+  <div *ngIf="habitacionesDisponibilidad.length === 0 && (habitacionesFiltradas.length > 0 || !buscandoHabitaciones); else sinResultadosHabitaciones">
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
       <thead class="table-light">
         <tr>
           <th>ID</th>
@@ -248,11 +264,10 @@
 
   <!-- Mensaje si no hay resultados -->
   <ng-template #sinResultadosHabitaciones>
-    <div class="alert alert-warning text-center">
-      No se encontraron habitaciones con esos criterios.
-      <button class="btn btn-link" (click)="resetearFiltrosHabitaciones()">Ver todo</button>
-    </div>
-  </ng-template>
+    <div *ngIf="habitacionesDisponibilidad.length === 0" class="alert alert-warning text-center mt-4">
+    No se encontraron habitaciones con esos criterios.
+  </div>
+</ng-template>
 </div>
 
 <!-- Tabla Establecimientos -->
@@ -261,24 +276,24 @@
   <button class="btn btn-success mb-3" (click)="abrirNuevo('establecimientos')">Añadir Establecimiento</button>
 
   <!-- Filtros -->
-  <div class="row g-2 mb-3">
+  <div *ngIf="habitacionesDisponibilidad.length === 0" class="row g-2 mb-3">
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroEstablecimientos.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroEstablecimientos()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroEstablecimientos.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroEstablecimientos()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroEstablecimientos.direccion" placeholder="Buscar por dirección" (input)="aplicarFiltroEstablecimientos()">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroEstablecimientos.direccion" placeholder="Buscar por dirección" (input)="aplicarFiltroEstablecimientos()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroEstablecimientos.telefono" placeholder="Buscar por teléfono" (input)="aplicarFiltroEstablecimientos()">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroEstablecimientos.telefono" placeholder="Buscar por teléfono" (input)="aplicarFiltroEstablecimientos()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroEstablecimientos.capacidad" placeholder="Buscar por capacidad" (input)="aplicarFiltroEstablecimientos()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroEstablecimientos.capacidad" placeholder="Buscar por capacidad" (input)="aplicarFiltroEstablecimientos()">
     </div>
   </div>
 
   <!-- Tabla o mensaje -->
   <div *ngIf="establecimientosFiltrados.length > 0 || !buscandoEstablecimientos; else sinResultadosEstablecimientos">
-    <table class="table table-bordered text-center">
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
       <thead class="table-light">
         <tr>
           <th>ID</th>
@@ -322,19 +337,19 @@
   <!-- Filtros -->
   <div class="row g-2 mb-3">
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroUsuarios.nombreUsuario" placeholder="Buscar por nombre de usuario" (input)="aplicarFiltroUsuarios()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroUsuarios.nombreUsuario" placeholder="Buscar por nombre de usuario" (input)="aplicarFiltroUsuarios()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroUsuarios.rol" placeholder="Buscar por rol" (input)="aplicarFiltroUsuarios()">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroUsuarios.rol" placeholder="Buscar por rol" (input)="aplicarFiltroUsuarios()">
     </div>
     <div class="col-md">
-      <input class="form-control" [(ngModel)]="filtroUsuarios.email" placeholder="Buscar por email" (input)="aplicarFiltroUsuarios()">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroUsuarios.email" placeholder="Buscar por email" (input)="aplicarFiltroUsuarios()">
     </div>
   </div>
 
   <!-- Tabla o mensaje -->
   <div *ngIf="usuariosFiltrados.length > 0 || !buscandoUsuarios; else sinResultadosUsuarios">
-    <table class="table table-bordered text-center">
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
       <thead class="table-light">
         <tr>
           <th>ID</th>
@@ -388,108 +403,121 @@
         <!-- Reserva -->
         <ng-container *ngIf="entidadTipo === 'reservas'">
       
-          <div *ngIf="!esNuevo"> <!-- Solo si es actualizar -->
-          <label>ID</label>
-          <input type="number" [(ngModel)]="editandoEntidad.id" name="id" class="form-control mb-2" readonly>
-          </div>
-        
           <label>Persona DNI</label>
-          <input type="text" [(ngModel)]="editandoEntidad.personaDni" name="personaDni" class="form-control mb-2" required>
+  <select id="select-persona-dni" class="form-control shadow-sm  mb-2" required>
+    <option [ngValue]="null" disabled>Seleccione una persona</option>
+    <option *ngFor="let persona of personas" [value]="persona.dni">
+      {{ persona.dni }} - {{ persona.nombre }} {{ persona.apellidos }}
+    </option>
+  </select>
 
            <label>Establecimiento ID</label>
-        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" required>
+        <select class="form-control shadow-sm mb-2" [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" required>
                    <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
           <option *ngFor="let establecimiento of establecimientos" [value]="establecimiento.id">{{ establecimiento.id }}</option>
         </select>
 
         <label>Habitación ID</label>
-        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.habitacionId" name="habitacionId" required>
-                   <option [ngValue]="null" disabled>Seleccione una habitacion</option>
-          <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">{{ habitacion.id }}</option>
-        </select>
+<select class="form-control shadow-sm mb-2"
+        [(ngModel)]="editandoEntidad.habitacionId"
+        name="habitacionId"
+        required>
+  <option [ngValue]="null" disabled>Seleccione una habitacion</option>
+  <option *ngFor="let habitacion of habitacionesFiltradasPorEstablecimiento" [value]="habitacion.id">
+    {{ habitacion.id }}
+  </option>
+</select>
 
 
           <label>Fecha Entrada</label>
-          <input type="date" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" class="form-control mb-2" required>
+          <input type="date" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" class="form-control shadow-sm mb-2" required>
 
           <label>Fecha Salida</label>
-          <input type="date" [(ngModel)]="editandoEntidad.fechaSalida" name="fechaSalida" class="form-control mb-2" required>
+          <input type="date" [(ngModel)]="editandoEntidad.fechaSalida" name="fechaSalida" class="form-control shadow-sm mb-2" required>
 
           <label>Motivo Entrada</label>
-          <input type="text" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada" class="form-control mb-2">
+          <input type="text" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada" class="form-control shadow-sm mb-2">
 
           <label>Observaciones</label>
-          <textarea [(ngModel)]="editandoEntidad.observaciones" name="observaciones" class="form-control mb-2"></textarea>
+          <textarea [(ngModel)]="editandoEntidad.observaciones" name="observaciones" class="form-control shadow-sm  mb-2"></textarea>
         </ng-container>
 
         <!-- Persona -->
         <ng-container *ngIf="entidadTipo === 'personas'">
           <label>Nombre</label>
-          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control shadow-sm mb-2" required>
 
           <label>Apellidos</label>
-          <input type="text" [(ngModel)]="editandoEntidad.apellidos" name="apellidos" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.apellidos" name="apellidos" class="form-control shadow-sm mb-2" required>
 
-          <label>DNI</label>
-          <input type="text" [(ngModel)]="editandoEntidad.dni" name="dni" class="form-control mb-2" required>
+          <label *ngIf="esNuevo">DNI</label>
+          <input *ngIf="esNuevo" type="text" [(ngModel)]="editandoEntidad.dni" name="dni" class="form-control shadow-sm mb-2" required>
 
           <label>Fecha Nacimiento</label>
-          <input type="date" [(ngModel)]="editandoEntidad.fechaNacimiento" name="fechaNacimiento" class="form-control mb-2">
+          <input type="date" [(ngModel)]="editandoEntidad.fechaNacimiento" name="fechaNacimiento" class="form-control shadow-sm  mb-2">
 
           <label>Teléfono</label>
-          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2">
+          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control shadow-sm  mb-2">
 
           <label>Email</label>
-          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2">
+          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control shadow-sm mb-2">
         </ng-container>
 
         <!-- Habitación -->
         <ng-container *ngIf="entidadTipo === 'habitaciones'">
 
-          <label>Número</label>
-          <input type="text" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control mb-2" required>
+          <label>Número de habitación</label>
+          <input type="text" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control shadow-sm mb-2" required>
 
           <label>Tipo</label>
-          <input type="text" [(ngModel)]="editandoEntidad.tipo" name="tipo" class="form-control mb-2" required>
+<select [(ngModel)]="editandoEntidad.tipo" name="tipo" class="form-control shadow-sm mb-2" required>
+  <option [value]="''" disabled selected>Seleccione tipo</option>
+  <option value="Individual">Individual</option>
+  <option value="Doble">Doble</option>
+</select>
 
-          <label>Estado</label>
-          <input type="text" [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control mb-2">
+<label>Estado</label>
+<select [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control shadow-sm  mb-2" required>
+  <option [value]="''" disabled selected>Seleccione estado</option>
+  <option value="DISPONIBLE">DISPONIBLE</option>
+  <option value="OCUPADA">OCUPADA</option>
+</select>
 
           <label>Establecimiento</label>
-          <select [(ngModel)]="editandoEntidad.establecimiento.id" name="establecimientoId" class="form-control mb-2" required>
-            <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
-            <option *ngFor="let est of establecimientos" [value]="est.id">{{ est.nombre }}</option>
+         <select [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" class="form-control shadow-sm mb-2" required>
+          <option [ngValue]="undefined" disabled selected>Seleccione un establecimiento</option>
+         <option *ngFor="let est of establecimientos" [ngValue]="est.id">{{ est.nombre }}</option>
           </select>
         </ng-container>
 
         <!-- Establecimiento -->
         <ng-container *ngIf="entidadTipo === 'establecimientos'">
           <label>Nombre</label>
-          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control shadow-sm mb-2" required>
 
           <label>Dirección</label>
-          <input type="text" [(ngModel)]="editandoEntidad.direccion" name="direccion" class="form-control mb-2">
+          <input type="text" [(ngModel)]="editandoEntidad.direccion" name="direccion" class="form-control shadow-sm  mb-2">
 
           <label>Teléfono</label>
-          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control mb-2">
+          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control shadow-sm b-2">
 
           <label>Capacidad</label>
-          <input type="number" [(ngModel)]="editandoEntidad.capacidad" name="capacidad" class="form-control mb-2">
+          <input type="number" [(ngModel)]="editandoEntidad.capacidad" name="capacidad" class="form-control shadow-sm mb-2">
         </ng-container>
 
         <!-- Usuario -->
         <ng-container *ngIf="entidadTipo === 'usuarios'">
           <label>Nombre de usuario</label>
-          <input type="text" [(ngModel)]="editandoEntidad.nombreUsuario" name="nombreUsuario" class="form-control mb-2" required>
+          <input type="text" [(ngModel)]="editandoEntidad.nombreUsuario" name="nombreUsuario" class="form-control shadow-sm mb-2" required>
 
           <label>Contraseña</label>
-          <input type="password" [(ngModel)]="editandoEntidad.contrasenya" name="contrasenya" class="form-control mb-2" required>
+          <input type="password" [(ngModel)]="editandoEntidad.contrasenya" name="contrasenya" class="form-control shadow-sm mb-2" required>
 
           <label>Rol</label>
-          <input type="text" [(ngModel)]="editandoEntidad.rol" name="rol" class="form-control mb-2">
+          <input type="text" [(ngModel)]="editandoEntidad.rol" name="rol" class="form-control shadow-sm mb-2">
 
           <label>Email</label>
-          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control mb-2">
+          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control shadow-sm mb-2">
         </ng-container>
 
         <!-- Botones -->
@@ -500,4 +528,5 @@
       </form>
     </div>
   </div>
+</div>
 </div>

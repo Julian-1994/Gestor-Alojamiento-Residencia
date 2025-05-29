@@ -18,4 +18,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Integer> {
     List<Reserva> findReservasBetweenDates(@Param("fechaEntrada") LocalDateTime fechaEntrada, @Param("fechaSalida") LocalDateTime fechaSalida);
 
     List<Reserva> findByFechaEntradaBefore(Date haceCincoAnios);
+
+    void deleteByFechaSalidaBefore(Date fecha);
+
+        List<Reserva> findByFechaSalidaBefore(Date fecha);
+
+
+
+
 }
+

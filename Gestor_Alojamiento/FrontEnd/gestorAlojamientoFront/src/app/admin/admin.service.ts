@@ -2,14 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Reserva } from '../model/reserva.model';
-import { Persona } from '../model/persona.model';
 import { Habitacion } from '../model/habitacion.model';
-import { Establecimiento } from '../model/establecimiento.model';
 import { Usuario } from '../model/usuario.model';
 import { ReservaDTO } from '../model/ReservaDTO.model';
 import { EstablecimientoDTO } from '../model/EstablecimientoDTO.model';
 import { HabitacionDTO } from '../model/HabitacionDTO.model';
+import { PersonaDTO } from '../model/PersonaDTO.model';
 
 @Injectable({
   providedIn: 'root'
@@ -55,8 +53,8 @@ export class AdminService {
     );
   }
 
-  getPersonas(): Observable<Persona[]> {
-    return this.http.get<Persona[]>(`${this.baseUrl}/personas`, { withCredentials: true }).pipe(
+   getPersonas(): Observable<PersonaDTO[]> {
+    return this.http.get<PersonaDTO[]>(`${this.baseUrl}/personas`, { withCredentials: true }).pipe(
       map(personas => personas.map(persona => ({
         ...persona,
         fechaNacimiento: this.dateToString(this.convertDateToISO(persona.fechaNacimiento)),
@@ -84,8 +82,13 @@ addReserva(reservas: ReservaDTO[]): Observable<any> {
 }
 
   // Métodos adicionales para obtener objetos por ID o DNI
-  getPersonaByDni(dni: string): Observable<Persona> {
-    return this.http.get<Persona>(`${this.baseUrl}/personas/${dni}`, { withCredentials: true });
+  getPersonaByDni(dni: string): Observable<PersonaDTO> {
+    return this.http.get<PersonaDTO>(`${this.baseUrl}/personas/${dni}`, { withCredentials: true }).pipe(
+      map(persona => ({
+        ...persona,
+        fechaNacimiento: this.dateToString(this.convertDateToISO(persona.fechaNacimiento)),
+      }))
+    );
   }
 
  getEstablecimientoById(id: number): Observable<EstablecimientoDTO> {
@@ -101,7 +104,7 @@ addReserva(reservas: ReservaDTO[]): Observable<any> {
   return date.length > 10 ? date.substring(0, 10) : date;
 }
 
-  addPersona(persona: Persona): Observable<any> {
+    addPersona(persona: PersonaDTO): Observable<any> {
     const formattedPersona = {
       ...persona,
       fechaNacimiento: this.dateToString(this.convertDateToISO(persona.fechaNacimiento)),
@@ -111,6 +114,7 @@ addReserva(reservas: ReservaDTO[]): Observable<any> {
       withCredentials: true
     });
   }
+
 
  addEstablecimiento(establecimientoDTO: EstablecimientoDTO): Observable<any> {
   return this.http.post(`${this.baseUrl}/establecimientos`, establecimientoDTO, {
@@ -133,25 +137,12 @@ addHabitacion(habitacionDTO: HabitacionDTO): Observable<any> {
   });
 }
 
- updateReserva(id: number, reserva: Reserva): Observable<any> {
+ updateReserva(id: number, reserva: ReservaDTO): Observable<any> {
   const dto: ReservaDTO = {
+    ...reserva,
     id,
-    personaDni:
-      typeof reserva.persona === 'string'
-        ? reserva.persona
-        : reserva.persona?.dni ?? '',
-    establecimientoId:
-      typeof reserva.establecimiento === 'number'
-        ? reserva.establecimiento
-        : reserva.establecimiento?.id ?? 0,
-    habitacionId:
-      typeof reserva.habitacion === 'number'
-        ? reserva.habitacion
-        : reserva.habitacion?.id ?? 0,
     fechaEntrada: this.dateToString(this.convertDateToISO(reserva.fechaEntrada)),
     fechaSalida: this.dateToString(this.convertDateToISO(reserva.fechaSalida)),
-    motivoEntrada: reserva.motivoEntrada ?? '',
-    observaciones: reserva.observaciones ?? ''
   };
 
   return this.http.put(
@@ -164,7 +155,7 @@ addHabitacion(habitacionDTO: HabitacionDTO): Observable<any> {
   );
 }
 
-  updatePersona(dni: string, persona: Persona): Observable<any> {
+  updatePersona(dni: string, persona: PersonaDTO): Observable<any> {
     const formattedPersona = {
       ...persona,
       fechaNacimiento: this.dateToString(this.convertDateToISO(persona.fechaNacimiento)),

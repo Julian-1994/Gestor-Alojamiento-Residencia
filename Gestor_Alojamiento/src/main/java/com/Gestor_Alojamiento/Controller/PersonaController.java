@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.Gestor_Alojamiento.Model.Persona;
 import com.Gestor_Alojamiento.Servicios.PersonaServicio;
+
+import DTO.PersonaDTO;
 
 @RestController
 @RequestMapping("/api/personas")
@@ -22,37 +23,33 @@ public class PersonaController {
 	 @Autowired
 	    private PersonaServicio personaServicio;
 
-	    @GetMapping
-	    public List<Persona> getAllPersonas() {
-	        return personaServicio.findAll();
-	    }
+	   @GetMapping
+    public List<PersonaDTO> getAllPersonas() {
+        return personaServicio.toDTOList(personaServicio.findAll());
+    }
 
-	    @GetMapping("/{dni}")
-	    public ResponseEntity<Persona> getPersonaByDni(@PathVariable String dni) {
-	        Persona persona = personaServicio.findById(dni);
-	        if (persona == null) {
-	            return ResponseEntity.notFound().build();
-	        }
-	        return ResponseEntity.ok(persona);
-	    }
+	   @GetMapping("/{dni}")
+    public ResponseEntity<PersonaDTO> getPersonaByDni(@PathVariable String dni) {
+        var persona = personaServicio.findById(dni);
+        if (persona == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(personaServicio.toDTO(persona));
+    }
+	   @PostMapping(consumes = "application/json")
+    public ResponseEntity<PersonaDTO> createPersona(@RequestBody PersonaDTO personaDTO) {
+        var nuevaPersona = personaServicio.saveFromDTO(personaDTO);
+        return ResponseEntity.ok(personaServicio.toDTO(nuevaPersona));
+    }
 
-	    @PostMapping (consumes = "application/json")
-	    public ResponseEntity<Persona> createPersona(@RequestBody Persona persona) {
-	        Persona nuevaPersona = personaServicio.save(persona);
-	        return ResponseEntity.ok(nuevaPersona);
-	    }
-
-
-	    @PutMapping (value = "/{dni}", consumes = "application/json")
-	    public ResponseEntity<Persona> updatePersona(@PathVariable String dni, @RequestBody Persona persona) {
-	        if (!personaServicio.existsById(dni)) {
-	            return ResponseEntity.notFound().build();
-	        }
-	        persona.setDni(dni);
-	        Persona actualizadaPersona = personaServicio.save(persona);
-	        return ResponseEntity.ok(actualizadaPersona);
-	    }
-
+    @PutMapping(value = "/{dni}", consumes = "application/json")
+    public ResponseEntity<PersonaDTO> updatePersona(@PathVariable String dni, @RequestBody PersonaDTO personaDTO) {
+        if (!personaServicio.existsById(dni)) {
+            return ResponseEntity.notFound().build();
+        }
+        var actualizadaPersona = personaServicio.updateFromDTO(dni, personaDTO);
+        return ResponseEntity.ok(personaServicio.toDTO(actualizadaPersona));
+    }
 	    @DeleteMapping("/{dni}")
 	    public ResponseEntity<Void> deletePersona(@PathVariable String dni) {
 	        if (!personaServicio.existsById(dni)) {
