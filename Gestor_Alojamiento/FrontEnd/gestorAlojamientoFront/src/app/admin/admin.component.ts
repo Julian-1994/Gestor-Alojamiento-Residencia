@@ -24,6 +24,8 @@ export class AdminComponent implements OnInit {
   habitaciones: HabitacionDTO[] = [];
   establecimientos: EstablecimientoDTO[] = [];
   usuarios: Usuario[] = [];
+  usuarioActual: any = null;
+
 
   // Control de visibilidad para tablas
   mostrarReservas = false;
@@ -72,6 +74,8 @@ export class AdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.usuarioActual = JSON.parse(localStorage.getItem('usuario') || 'null');
+
   }
 
   cargarDatos(): void {
@@ -408,6 +412,16 @@ abrirReservaTrasRecarga() {
     this.esNuevo = false;
   }
 
+  cerrarSesion() {
+  fetch('http://localhost:9020/logout', {
+    method: 'POST',
+    credentials: 'include' // Importante para enviar la cookie de sesión
+  })
+  .then(() => {
+    localStorage.removeItem('usuario'); // Limpia datos locales si los usas
+    window.location.href = '/login';    // Redirige al login
+  });
+}
   filtrarHabitacionesPorEstablecimiento(establecimientoId: number) {
   this.habitacionesFiltradasPorEstablecimiento = this.habitaciones.filter(
     h => h.establecimientoId === establecimientoId

@@ -11,3 +11,9 @@
   background: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
 
 }
+
+.img-card-fixed {
+  height: 220px;
+  object-fit: cover;
+  width: 100%;
+}

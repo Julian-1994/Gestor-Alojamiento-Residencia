@@ -7,6 +7,7 @@ import com.Gestor_Alojamiento.Repositorios.ReservaRepository;
 import com.Gestor_Alojamiento.Batch.PersonaItemWriter;
 import com.Gestor_Alojamiento.Batch.ReservaItemReader;
 import com.Gestor_Alojamiento.Batch.ReservaItemWriter;
+import com.Gestor_Alojamiento.Batch.EstadisticasTasklet;
 import com.Gestor_Alojamiento.Batch.PersonaItemReader;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.*;
@@ -79,6 +80,27 @@ public class BatchConfig {
         return new JobBuilder("limpiarAntiguosJob", jobRepository)
                 .start(borrarReservasAntiguasStep)
                 .next(borrarPersonasAntiguasStep)
+                .build();
+    }
+    
+    @Bean
+    public Step estadisticasStep(
+            JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
+            EstadisticasTasklet estadisticasTasklet
+    ) {
+        return new StepBuilder("estadisticasStep", jobRepository)
+                .tasklet(estadisticasTasklet, transactionManager)
+                .build();
+    }
+
+    @Bean
+    public Job estadisticasJob(
+            JobRepository jobRepository,
+            Step estadisticasStep
+    ) {
+        return new JobBuilder("estadisticasJob", jobRepository)
+                .start(estadisticasStep)
                 .build();
     }
 }

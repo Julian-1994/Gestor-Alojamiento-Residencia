@@ -9,6 +9,8 @@ import { ReservaDTO } from '../model/ReservaDTO.model';
 import { HabitacionDTO } from '../model/HabitacionDTO.model';
 import { Establecimiento } from '../model/establecimiento.model';
 import { EstablecimientoDTO } from '../model/EstablecimientoDTO.model';
+import { PersonaDTO } from '../model/PersonaDTO.model';
+import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
 
 @Component({
   selector: 'app-user',
@@ -20,23 +22,39 @@ import { EstablecimientoDTO } from '../model/EstablecimientoDTO.model';
 export class UserComponent implements OnInit {
 
   reservas: ReservaDTO[] = [];
-  personas: Persona[] = [];
+  personas: PersonaDTO[] = [];
   habitaciones: HabitacionDTO[] = [];
   establecimientos: EstablecimientoDTO[] = [];
+  usuarioActual: any = null;
+
+
   fechaDisponibilidadInicio: string = '';
   fechaDisponibilidadFin: string = '';
   habitacionesDisponibilidad: HabitacionDTO[] = [];
   reservasFiltradas: ReservaDTO[] = [];
   filtroReservas = { nombre: '', dni: '' };
   buscandoReservas = false;
-  editandoEntidad: ReservaDTO | null = null;
+  editandoEntidad: any = null;
   esNuevo: boolean = false;
   mostrarCalendario: boolean = false;
+  mostrarFormularioPersona: boolean = false;
+  habitacionesFiltradasPorEstablecimiento: HabitacionDTO[] = [];
+  nuevaPersona: Persona = {
+    nombre: '', apellidos: '', dni: '',
+    fechaNacimiento: '',
+    telefono: '',
+    email: '',
+    
+  }; // ajusta según tu modelo
+;
+
 
   constructor(private adminService: AdminService) {}
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.usuarioActual = JSON.parse(localStorage.getItem('usuario') || 'null');
+
   }
 
   cargarDatos(): void {
@@ -71,6 +89,11 @@ export class UserComponent implements OnInit {
     this.reservasFiltradas = [...this.reservas];
   }
 
+   filtrarHabitacionesPorEstablecimiento(establecimientoId: number) {
+  this.habitacionesFiltradasPorEstablecimiento = this.habitaciones.filter(
+    h => h.establecimientoId === establecimientoId
+  );
+}
   verDisponibilidadHabitaciones() {
     const entrada = new Date(this.fechaDisponibilidadInicio);
     const salida = new Date(this.fechaDisponibilidadFin);
@@ -132,6 +155,23 @@ export class UserComponent implements OnInit {
     });
   }
 
+  abrirFormularioPersona() {
+  this.mostrarFormularioPersona = true;
+  this.nuevaPersona = { nombre: '', apellidos: '', dni: '', fechaNacimiento: '', telefono: '', email: '' }; // limpia el formulario
+}
+
+guardarPersona() {
+  this.adminService.addPersona(this.nuevaPersona).subscribe({
+    next: () => {
+      alert('Persona añadida correctamente');
+      this.mostrarFormularioPersona = false;
+      this.cargarDatos();
+    },
+    error: (err) => { console.error('Error al añadir persona:', err); }
+  });
+}
+  
+
   guardar() {
     if (this.esNuevo && this.editandoEntidad) {
       this.adminService.addReserva([this.editandoEntidad]).subscribe({
@@ -145,6 +185,8 @@ export class UserComponent implements OnInit {
   cancelar() {
     this.editandoEntidad = null;
     this.esNuevo = false;
+    this.mostrarFormularioPersona = false;
+
   }
 
    abrirEditar(tipo: string, entidad: any) {
@@ -164,4 +206,29 @@ export class UserComponent implements OnInit {
       // Agrega casos para otros tipos de entidades si es necesario
     }
   }
+  reservarEstablecimiento(establecimientoId: number) {
+  // Prepara una nueva reserva con el establecimiento ya seleccionado
+  this.esNuevo = true;
+  this.editandoEntidad = {
+    id: 0,
+    personaDni: this.personas.length > 0 ? this.personas[0].dni : '',
+    establecimientoId: establecimientoId,
+    habitacionId: 0, // Puedes pedir la habitación después si lo necesitas
+    fechaEntrada: '',
+    fechaSalida: '',
+    motivoEntrada: '',
+    observaciones: ''
+  };
+}
+
+cerrarSesion() {
+  fetch('http://localhost:9020/logout', {
+    method: 'POST',
+    credentials: 'include' // Importante para enviar la cookie de sesión
+  })
+  .then(() => {
+    localStorage.removeItem('usuario'); // Limpia datos locales si los usas
+    window.location.href = '/login';    // Redirige al login
+  });
+}
 }

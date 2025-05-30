@@ -1,189 +1,155 @@
 <div class="bg-primary-subtle p-5 w-100 mb-5 shadow-lg rounded-4 header-admin">
+  <div style="position: absolute; top: 12px; right: 32px; z-index: 10;" *ngIf="usuarioActual">
+    <span style="font-size: 0.95rem;">
+      Has iniciado sesión como: <strong>{{ usuarioActual.nombreUsuario }}</strong>
+    </span>
+    <button class="btn btn-outline-danger btn-sm ms-2 mt-1" (click)="cerrarSesion()">Cerrar sesión</button>
+  </div>
   <div class="row align-items-center g-0">
-    <!-- Imagen a la izquierda -->
     <div class="col-2 text-start">
       <img src="./R (2).png" alt="Logo" width="130" height="130">
+    
     </div>
-    <!-- Título centrado -->
     <div class="col-8 text-center">
       <h1 class="m-0 ms-md-0 ms-5">Residencias VitaSalud</h1>
     </div>
-    <!-- Columna vacía para balancear -->
     <div class="col-2"></div>
   </div>
 </div>
 
-<h4 class="mb-5 text-center">Buscar Reservas</h4>
-
-<!-- Filtros de búsqueda -->
-<div class="row g-2 mb-3 justify-content-center">
-  <div class="col-md-4 d-flex">
-    <input class="form-control" [(ngModel)]="filtroReservas.nombre" placeholder="Buscar por nombre">
-    <button class="btn btn-primary ms-2" (click)="aplicarFiltroReservas()">Buscar</button>
-  </div>
-  <div class="col-md-4 d-flex">
-    <input class="form-control" [(ngModel)]="filtroReservas.dni" placeholder="Buscar por DNI">
-    <button class="btn btn-primary ms-2" (click)="aplicarFiltroReservas()">Buscar</button>
-  </div>
-</div>
-
-<!-- Tabla de reservas filtradas o mensaje -->
-<div *ngIf="reservasFiltradas.length > 0; else sinResultadosReservas">
-  <table class="table table-bordered text-center">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th>
-        <th>Persona DNI</th>
-        <th>Establecimiento ID</th>
-        <th>Habitación ID</th>
-        <th>Fecha Entrada</th>
-        <th>Fecha Salida</th>
-        <th>Motivo Entrada</th>
-        <th>Observaciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let r of reservasFiltradas">
-        <td>{{ r.personaDni }}</td>
-        <td>{{ r.establecimientoId }}</td>
-        <td>{{ r.habitacionId }}</td>
-        <td>{{ r.fechaEntrada | date:'yyyy/MM/dd' }}</td>
-        <td>{{ r.fechaSalida | date:'yyyy/MM/dd' }}</td>
-        <td>{{ r.motivoEntrada }}</td>
-        <td>{{ r.observaciones }}</td>
-        <td>
-          <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('reservas', r)">Editar</button>
-          <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('reservas', r)">Eliminar</button>
-       </td>
-        </tr>
-
-       
-        
-    </tbody>
-  </table>
-</div>
-
-<!-- Mensaje si no hay resultados -->
-<ng-template #sinResultadosReservas>
-  <div class="alert alert-warning text-center">
-    No se encontraron reservas con esos criterios.
-    <button class="btn btn-link" (click)="resetearFiltrosReservas()">Ver todo</button>
-  </div>
-</ng-template>
-
-<!-- Botón para añadir reserva -->
-<div class="text-center mt-4">
-  <button class="btn btn-success" (click)="abrirNuevo()">Añadir Reserva</button>
-</div>
-
-<!-- Botón para reservar -->
-<div class="text-center mt-4">
-  <button class="btn btn-primary" (click)="abrirCalendario()">Reservar</button>
-</div>
-
-<!-- Modal para calendario de reservas -->
-<div *ngIf="mostrarCalendario" class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content p-3">
-      <h5>Seleccionar Fechas para Reservar</h5>
-      <div class="d-flex justify-content-center align-items-end gap-3 flex-wrap">
-        <div>
-          <label>Fecha Entrada</label>
-          <input type="date" class="form-control" [(ngModel)]="fechaDisponibilidadInicio">
-        </div>
-        <div>
-          <label>Fecha Salida</label>
-          <input type="date" class="form-control" [(ngModel)]="fechaDisponibilidadFin">
-        </div>
-        <div>
-          <button class="btn btn-primary" (click)="verDisponibilidadHabitaciones()" [disabled]="!fechaDisponibilidadInicio || !fechaDisponibilidadFin">
-            Ver Disponibilidad
-          </button>
-        </div>
-      </div>
-      <div *ngIf="habitacionesDisponibilidad.length > 0" class="mt-4">
-        <h5>Habitaciones Disponibles</h5>
-        <table class="table table-bordered text-center">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Número</th>
-              <th>Tipo</th>
-              <th>Estado</th>
-              <th>Establecimiento ID</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let h of habitacionesDisponibilidad">
-              <td>{{ h.id }}</td>
-              <td>{{ h.numero }}</td>
-              <td>{{ h.tipo }}</td>
-              <td>{{ h.estado }}</td>
-              <td>{{ h.establecimientoId }}</td>
-              <td>
-                <button class="btn btn-success btn-sm" (click)="reservarHabitacion(h)">Reservar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="mt-3 d-flex justify-content-end gap-2">
-        <button class="btn btn-secondary" (click)="cerrarCalendario()">Cerrar</button>
+<!-- Mensaje descriptivo -->
+<div class="container mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="alert alert-info text-center fs-5">
+        Bienvenido a <strong>Residencias VitaSalud</strong>. Selecciona el establecimiento donde deseas realizar tu reserva y disfruta de nuestros servicios personalizados y atención de calidad.
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal para formulario Añadir/Editar -->
-<div *ngIf="editandoEntidad" class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content p-3">
-      <h5>{{ esNuevo ? 'Añadir' : 'Editar' }} Reserva</h5>
-
-      <form (ngSubmit)="guardar()" #formUser="ngForm">
-       <label>Persona DNI</label>
-  <select class="form-control mb-2" [(ngModel)]="editandoEntidad.personaDni" name="personaDni" required *ngIf="editandoEntidad && editandoEntidad.personaDni">
-    <option *ngFor="let persona of personas" [value]="persona.dni">{{ persona.dni }}</option>
-  </select>
-
-        <label>Establecimiento ID</label>
-        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" required>
-          <option *ngFor="let establecimiento of establecimientos" [value]="establecimiento.id">{{ establecimiento.id }}</option>
-        </select>
-
-        <label>Habitación ID</label>
-        <select class="form-control mb-2" [(ngModel)]="editandoEntidad.habitacionId" name="habitacionId" required>
-          <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">{{ habitacion.id }}</option>
-        </select>
-
-        <label>Fecha Entrada</label>
-        <input type="date" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" class="form-control mb-2" required>
-
-        <label>Fecha Salida</label>
-        <input type="date" [(ngModel)]="editandoEntidad.fechaSalida" name="fechaSalida" class="form-control mb-2" required>
-
-        <label>Motivo Entrada</label>
-        <input type="text" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada" class="form-control mb-2">
-
-        <label>Observaciones</label>
-        <textarea [(ngModel)]="editandoEntidad.observaciones" name="observaciones" class="form-control mb-2"></textarea>
-
-        <div class="mt-3 d-flex justify-content-end gap-2">
-          <button type="submit" class="btn btn-primary" [disabled]="formUser.invalid">Guardar</button>
-          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+<!-- Cards de establecimientos -->
+<div class="container mb-5">
+  <div class="row justify-content-center g-4">
+    <div class="col-md-5">
+      <div class="card shadow-sm h-100">
+        <img src="../chambre-urban-1-lit-ymagyn-2.jpg" class="card-img-top img-fluid img-card-fixed" alt="Residencia Alicante" style="max-height:220px; object-fit:cover;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Residencia Alicante</h5>
+          <p class="card-text">Centro moderno en Alicante con atención personalizada y todas las comodidades para tu bienestar.</p>
+          <button class="btn btn-primary me-2" (click)="abrirFormularioPersona()">Añadir persona</button>
+          <button class="btn btn-success" (click)="abrirNuevo()">Reservar</button>
         </div>
-      </form>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="card shadow-sm h-100">
+        <img src="../RESI.png" class="card-img-top img-fluid img-card-fixed" alt="Residencia Valencia">
+        <div class="card-body text-center">
+          <h5 class="card-title">Residencia Valencia</h5>
+          <p class="card-text">Instalaciones de primer nivel en Valencia, pensadas para tu tranquilidad y confort.</p>
+          <button class="btn btn-primary me-2" (click)="abrirFormularioPersona()">Añadir persona</button>
+          <button class="btn btn-success" (click)="abrirNuevo()">Reservar</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Formulario para añadir persona -->
+<div *ngIf="mostrarFormularioPersona" class="container mb-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card p-4 shadow">
+        <h4 class="mb-3 text-center">Añadir Persona</h4>
+        <form (ngSubmit)="guardarPersona()">
+          <div class="mb-3">
+            <label>Nombre</label>
+            <input type="text" [(ngModel)]="nuevaPersona.nombre" name="nombre" class="form-control shadow-sm mb-2" required>
+            <label>Apellidos</label>
+            <input type="text" [(ngModel)]="nuevaPersona.apellidos" name="apellidos" class="form-control shadow-sm mb-2" required>
+            <label>DNI</label>
+            <input type="text" [(ngModel)]="nuevaPersona.dni" name="dni" class="form-control shadow-sm mb-2" required>
+            <label>Fecha Nacimiento</label>
+            <input type="date" [(ngModel)]="nuevaPersona.fechaNacimiento" name="fechaNacimiento" class="form-control shadow-sm mb-2">
+            <label>Teléfono</label>
+            <input type="text" [(ngModel)]="nuevaPersona.telefono" name="telefono" class="form-control shadow-sm mb-2">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="nuevaPersona.email" name="email" class="form-control shadow-sm mb-2">
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success me-2">Guardar Persona</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Formulario para añadir reserva -->
+<div *ngIf="esNuevo && editandoEntidad" class="container mb-4">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card p-4 shadow">
+        <h4 class="mb-3 text-center">Nueva Reserva</h4>
+        <form (ngSubmit)="guardar()">
+          <div class="mb-3">
+            <label>Persona</label>
+            <select class="form-select" [(ngModel)]="editandoEntidad.personaDni" name="personaDni" required>
+              <option [ngValue]="null" disabled>Seleccione una persona</option>
+              <option *ngFor="let p of personas" [value]="p.dni">{{ p.nombre }} {{ p.apellidos }} ({{ p.dni }})</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Establecimiento</label>
+            <select class="form-select" [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" required (change)="filtrarHabitacionesPorEstablecimiento(editandoEntidad.establecimientoId)">
+              <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
+              <option *ngFor="let est of establecimientos" [ngValue]="est.id">{{ est.nombre }}</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Habitación</label>
+            <select class="form-select" [(ngModel)]="editandoEntidad.habitacionId" name="habitacionId" required>
+              <option [ngValue]="null" disabled>Seleccione una habitación</option>
+              <option *ngFor="let h of habitacionesFiltradasPorEstablecimiento" [value]="h.id">
+                {{ h.numero }} - {{ h.tipo }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Fecha Entrada</label>
+            <input type="date" class="form-control" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" required>
+          </div>
+          <div class="mb-3">
+            <label>Fecha Salida</label>
+            <input type="date" class="form-control" [(ngModel)]="editandoEntidad.fechaSalida" name="fechaSalida" required>
+          </div>
+          <div class="mb-3">
+            <label>Motivo Entrada</label>
+            <input type="text" class="form-control" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada">
+          </div>
+          <div class="mb-3">
+            <label>Observaciones</label>
+            <textarea class="form-control" [(ngModel)]="editandoEntidad.observaciones" name="observaciones"></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success me-2">Guardar Reserva</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer class="text-center mt-5 bg-primary-subtle py-4 footer-admin">
-    <div class="container">
-      <p>&copy; 2025. Julian Perez Pereña. Todos los derechos reservados.</p>
-     <p class="mb-1">
+  <div class="container">
+    <p>&copy; 2025. Julian Perez Pereña. Todos los derechos reservados.</p>
+    <p class="mb-1">
       <strong>Email:</strong> <a href="mailto:contacto@vitasaud.com">contactovitasaud.com</a> &nbsp;|&nbsp;
       <strong>Teléfono:</strong> <a href="tel:+34900123456">900 123 456</a>
     </p>
     <p class="mb-0"><strong>Dirección:</strong> Calle Salud, 123, Alicante</p>
-    </div>
-  </footer>
+  </div>
+</footer>

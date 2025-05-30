@@ -28,6 +28,7 @@ export class LoginComponent {
 
     this.http.post<any>('http://localhost:9020/api/usuarios/login', body, { withCredentials: true }).subscribe({
       next: (data: any) => {
+            localStorage.setItem('usuario', JSON.stringify(data));
         if (data.rol === 'ADMIN') {
           this.router.navigate(['/admin']);
         } else if (data.rol === 'USUARIO') {

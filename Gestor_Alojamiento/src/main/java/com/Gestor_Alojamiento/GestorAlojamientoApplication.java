@@ -18,6 +18,8 @@ public class GestorAlojamientoApplication implements CommandLineRunner {
     @Autowired
     private Job limpiarAntiguosJob;
 
+    @Autowired private Job estadisticasJob;
+
 	public static void main(String[] args) {
 		SpringApplication.run(GestorAlojamientoApplication.class, args);
 	}
@@ -28,6 +30,9 @@ public class GestorAlojamientoApplication implements CommandLineRunner {
             .addLong("time", System.currentTimeMillis())
             .toJobParameters();
         jobLauncher.run(limpiarAntiguosJob, params);
+        jobLauncher.run(estadisticasJob, new JobParameters());
     }
+
+
 
 }

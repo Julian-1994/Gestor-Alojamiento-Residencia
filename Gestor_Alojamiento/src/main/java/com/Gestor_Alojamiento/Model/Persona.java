@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.validation.constraints.NotBlank;
 
 @JsonIdentityInfo(
   generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -18,6 +19,7 @@ public class Persona {
     
 	@Id
 	@Column(nullable = false, unique = true)
+	@NotBlank(message = "El DNI no puede estar vacío")
     private String dni;
 
     @Column(nullable = false)
