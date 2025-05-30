@@ -48,6 +48,8 @@ export class AdminComponent implements OnInit {
   buscandoHabitaciones = false;
   buscandoEstablecimientos = false;
   buscandoUsuarios = false;
+  pacienteSeleccionado: any = null;
+
 
   filtroReservas = { dni: '', establecimientoId: '', fechaDesde: '', fechaHasta: '' };
   filtroPersonas = { nombre: '', apellidos: '', dni: '' };
@@ -542,6 +544,14 @@ verTodasHabitaciones() {
     this.buscandoUsuarios = false;
     this.usuariosFiltrados = [...this.usuarios];
   }
+
+  verPaciente(dni: string) {
+  this.pacienteSeleccionado = this.personas.find(p => p.dni === dni);
+}
+
+cerrarPaciente() {
+  this.pacienteSeleccionado = null;
+}
 
   // Mostrar nombre de persona en una reserva (en la tabla)
   getNombrePersonaDeReserva(reserva: ReservaDTO): string {

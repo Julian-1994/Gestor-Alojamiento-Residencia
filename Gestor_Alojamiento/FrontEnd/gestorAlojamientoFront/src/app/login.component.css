@@ -1,0 +1,13 @@
+
+.header-admin {
+  border-bottom: 1px solid #026669; /* Azul oscuro solo abajo */
+  background: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+}
+
+
+.footer-admin {
+  background: linear-gradient(135deg, #e3f0ff 0%, #f9f9f9 100%);
+
+}

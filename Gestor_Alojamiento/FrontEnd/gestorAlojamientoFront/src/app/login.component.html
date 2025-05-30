@@ -1,13 +1,13 @@
-<div class="bg-body-secondary p-5 w-100 mb-5">
-  <div class="row align-items-center">
+<div class="bg-primary-subtle p-5 w-100 mb-5 shadow-lg rounded-4 header-admin">
+  <div class="row align-items-center g-0">
     <!-- Imagen a la izquierda -->
     <div class="col-2 text-start">
-      <img src="./R (2).png" alt="Logo" width="80" height="80">
+        <img src="./R (2).png" alt="Logo" width="130" height="130">
     </div>
 
     <!-- Título centrado -->
     <div class="col-8 text-center">
-      <h1 class="m-0">{{ title }}</h1>
+      <h1 class="m-0 ms-md-0 ms-5 ">Residencias VitaSalud</h1>
     </div>
 
     <!-- Columna vacía para balancear -->
@@ -16,27 +16,33 @@
 </div>
     <h3 class="text-center mb-5">Inicio de sesion</h3>
     <form (ngSubmit)="login()" class="needs-validation" novalidate>
-      <div class="form-group row justify-content-center">
-        <label for="usuario" class="col-form-label text-center col-md-2 mb-3">Usuario</label>
-        <div class="col-md-6">
-          <input type="text" class="form-control" id="usuario" [(ngModel)]="usuario" name="usuario" required>
-        </div>
-      </div>
-      <div class="form-group row justify-content-center">
-        <label for="contrasenya" class="col-form-label text-center col-md-2">Contraseña</label>
-        <div class="col-md-6">
-          <input type="password" class="form-control mb-3" id="contrasenya" [(ngModel)]="contrasenya" name="contrasenya" required>
-        </div>
-      </div>
-      <div class="text-center">
+       <div class="row justify-content-center mb-2">
+    <div class="col-md-3 mb-3 text-center">
+      <label for="usuario" class="form-label mb-3">Usuario</label>
+      <input type="text" class="form-control shadow-sm" id="usuario" [(ngModel)]="usuario" name="usuario" required>
+    </div>
+  </div>
+  <div class="row justify-content-center mb-3">
+    <div class="col-md-3 mb-3 text-center">
+      <label for="contrasenya" class="form-label mb-3">Contraseña</label>
+      <input type="password" class="form-control shadow-sm" id="contrasenya" [(ngModel)]="contrasenya" name="contrasenya" required>
+    </div>
+  </div>
+  <div class="text-center">
+
         <button type="submit" class="btn btn-primary">Entrar</button>
       </div>
     </form>
     <p *ngIf="error" class="text-danger mt-3 text-center">{{ error }}</p>
 
 
-  <footer class="text-center mt-5">
+  <footer class="text-center mt-5 bg-primary-subtle py-4 footer-admin">
     <div class="container">
       <p>&copy; 2025. Julian Perez Pereña. Todos los derechos reservados.</p>
+     <p class="mb-1">
+      <strong>Email:</strong> <a href="mailto:contacto@vitasaud.com">contactovitasaud.com</a> &nbsp;|&nbsp;
+      <strong>Teléfono:</strong> <a href="tel:+34900123456">900 123 456</a>
+    </p>
+    <p class="mb-0"><strong>Dirección:</strong> Calle Salud, 123, Alicante</p>
     </div>
   </footer>
