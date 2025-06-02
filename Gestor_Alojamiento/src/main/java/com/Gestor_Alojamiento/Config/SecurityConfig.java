@@ -35,8 +35,8 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").hasRole("USUARIO")
 
                         .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
-                        .requestMatchers("/api/personas/**").hasRole("ADMIN")
-                        .requestMatchers("/api/reservas/**").hasRole("ADMIN")
+                        .requestMatchers("/api/personas/**").hasAnyRole(    "USUARIO", "ADMIN")
+                        .requestMatchers("/api/reservas/**").hasAnyRole(    "USUARIO", "ADMIN")
                         .anyRequest().permitAll())
                     .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));

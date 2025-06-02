@@ -2,7 +2,7 @@ package DTO;
 
 public class UsuarioDTO {
     
-      private int id;
+    private int id;
     private String nombreUsuario;
     private String contrasenya;
     private String rol;

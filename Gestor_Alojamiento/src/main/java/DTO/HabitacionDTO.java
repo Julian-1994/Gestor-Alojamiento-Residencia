@@ -6,9 +6,7 @@ public class HabitacionDTO {
     private int id;
     private String numero;
     private String tipo;
-    private EstadoHabitacion estado; // puedes usar String para el enum o EstadoHabitacion si quieres
-
-    // Referencia simplificada al Establecimiento: solo el id o nombre
+    private EstadoHabitacion estado; 
     private int establecimientoId;
    
 

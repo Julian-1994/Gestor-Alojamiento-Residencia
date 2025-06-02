@@ -5,16 +5,9 @@ import java.sql.Date;
 public class ReservaDTO {
 
     private int id;
-    // Información simplificada de Persona (podría ser solo id o id + nombre)
     private String personaDni;
-
-    // Información simplificada de Establecimiento
     private int establecimientoId;
-
-
-    // Información simplificada de Habitacion
     private int habitacionId;
-
     private Date fechaEntrada;
     private Date fechaSalida;
     private String motivoEntrada;
@@ -34,8 +27,6 @@ public class ReservaDTO {
         this.motivoEntrada = motivoEntrada;
         this.observaciones = observaciones;
     }
-
-    // Getters y setters
 
 
     public int getId() { return id; }

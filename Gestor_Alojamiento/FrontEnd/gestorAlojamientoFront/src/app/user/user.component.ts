@@ -114,19 +114,37 @@ export class UserComponent implements OnInit {
   }
 
   abrirNuevo() {
-    this.esNuevo = true;
-    this.editandoEntidad = {  
-      id: 0,
-      personaDni: this.personas.length > 0 ? this.personas[0].dni : '',
-    establecimientoId: this.habitaciones.length > 0 ? this.habitaciones[0].establecimientoId : 0,
-    habitacionId: this.habitaciones.length > 0 ? this.habitaciones[0].id : 0,
-    
-      fechaEntrada: '',
-      fechaSalida: '',
-      motivoEntrada: '',
-      observaciones: ''
-    };
+  if(this.personas.length === 0 || this.establecimientos.length === 0 || this.habitaciones.length === 0) {
+    // Recargar datos y abrir cuando terminen
+    this.adminService.getPersonas().subscribe(personas => {
+      this.personas = personas;
+      this.adminService.getEstablecimientos().subscribe(establecimientos => {
+        this.establecimientos = establecimientos;
+        this.adminService.getHabitaciones().subscribe(habitaciones => {
+          this.habitaciones = habitaciones;
+          this.inicializarNuevaReserva();
+        });
+      });
+    });
+  } else {
+    this.inicializarNuevaReserva();
   }
+}
+
+inicializarNuevaReserva() {
+  this.esNuevo = true;
+  this.editandoEntidad = {
+    id: 0,
+    personaDni: this.personas.length > 0 ? this.personas[0].dni : '',
+    establecimientoId: this.establecimientos.length > 0 ? this.establecimientos[0].id : 0,
+    habitacionId: 0,
+    fechaEntrada: '',
+    fechaSalida: '',
+    motivoEntrada: '',
+    observaciones: ''
+  };
+  this.filtrarHabitacionesPorEstablecimiento(this.editandoEntidad.establecimientoId);
+}
 
   abrirCalendario() {
     this.mostrarCalendario = true;
