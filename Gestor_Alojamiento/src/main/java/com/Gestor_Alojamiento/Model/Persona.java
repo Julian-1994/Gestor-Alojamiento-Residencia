@@ -21,7 +21,6 @@ public class Persona {
 	@Column(nullable = false, unique = true)
 	@NotBlank(message = "El DNI no puede estar vacío")
     private String dni;
-
     @Column(nullable = false)
     private String nombre;
     @Column(nullable = false)
@@ -33,7 +32,6 @@ public class Persona {
     private String telefono;
     @Column(nullable = false, unique = true)
     private String email;
-
 	@JsonIgnoreProperties("persona")
     @OneToMany(mappedBy = "persona")
     private List<Reserva> reservas;

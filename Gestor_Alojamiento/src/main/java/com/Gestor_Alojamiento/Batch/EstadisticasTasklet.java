@@ -1,5 +1,6 @@
 package com.Gestor_Alojamiento.Batch;
 
+import com.Gestor_Alojamiento.Model.Persona;
 import com.Gestor_Alojamiento.Repositorios.PersonaRepository;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -31,7 +32,7 @@ public class EstadisticasTasklet implements Tasklet {
         estadisticas.append("Estadísticas diarias:\n\n");
 
         // Calcular la media de edad de las personas
-    List<com.Gestor_Alojamiento.Model.Persona> personas = personaRepository.findAll();
+    List<Persona> personas = personaRepository.findAll();
     if (personas.isEmpty()) {
         estadisticas.append("No hay personas registradas.\n");
     } else {
