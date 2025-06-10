@@ -91,14 +91,6 @@ addReserva(reservas: ReservaDTO[]): Observable<any> {
     );
   }
 
- getEstablecimientoById(id: number): Observable<EstablecimientoDTO> {
-  return this.http.get<EstablecimientoDTO>(`${this.baseUrl}/establecimientos/${id}`, { withCredentials: true });
-}
-
-  getHabitacionById(id: number): Observable<Habitacion> {
-    return this.http.get<Habitacion>(`${this.baseUrl}/habitaciones/${id}`, { withCredentials: true });
-  }
-
   private formatDateString(date: string): string {
   if (!date) return '';
   return date.length > 10 ? date.substring(0, 10) : date;
@@ -209,11 +201,5 @@ addHabitacion(habitacionDTO: HabitacionDTO): Observable<any> {
     return this.http.delete(`${this.baseUrl}/usuarios/${id}`, { withCredentials: true });
   }
 
-  // GET Habitaciones Disponibles
- getHabitacionesDisponibles(fechaEntrada: string, fechaSalida: string): Observable<Habitacion[]> {
-  return this.http.get<Habitacion[]>(
-    `${this.baseUrl}/habitaciones/disponibles?fechaEntrada=${fechaEntrada}&fechaSalida=${fechaSalida}`,
-    { withCredentials: true }
-  );
-}
+
 }

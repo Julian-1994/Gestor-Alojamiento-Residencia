@@ -1,4 +1,4 @@
-package DTO;
+package com.Gestor_Alojamiento.DTO;
 
 public class UsuarioDTO {
     

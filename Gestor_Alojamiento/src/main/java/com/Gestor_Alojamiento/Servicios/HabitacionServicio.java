@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.Gestor_Alojamiento.Model.Establecimiento;
 import com.Gestor_Alojamiento.Model.Habitacion;
 import com.Gestor_Alojamiento.Repositorios.HabitacionRepository;
-import DTO.HabitacionDTO;
+import com.Gestor_Alojamiento.DTO.HabitacionDTO;
 
 @Service
 public class HabitacionServicio {

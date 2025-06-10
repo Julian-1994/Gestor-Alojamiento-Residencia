@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.Gestor_Alojamiento.Model.Persona;
 import com.Gestor_Alojamiento.Repositorios.PersonaRepository;
 
-import DTO.PersonaDTO;
+import com.Gestor_Alojamiento.DTO.PersonaDTO;
 
 @Service
 public class PersonaServicio {

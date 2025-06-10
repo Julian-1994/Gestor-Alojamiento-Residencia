@@ -1,0 +1,153 @@
+<div>
+  <h2 class="text-center mb-3">Habitaciones</h2>
+  <button class="btn btn-success mb-2" (click)="abrirNuevo()">Añadir Habitación</button>
+
+  <!-- Filtros -->
+  <div *ngIf="habitacionesDisponibilidad.length === 0" class="row g-2 mb-3">
+    <div class="col-md">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.numero" placeholder="Buscar por número" (input)="aplicarFiltroHabitaciones()">
+    </div>
+    <div class="col-md">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.tipo" placeholder="Buscar por tipo" (input)="aplicarFiltroHabitaciones()">
+    </div>
+    <div class="col-md">
+      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.estado" placeholder="Buscar por estado" (input)="aplicarFiltroHabitaciones()">
+    </div>
+    <div class="col-md">
+      <input class="form-control shadow-sm" [(ngModel)]="filtroHabitaciones.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroHabitaciones()">
+    </div>
+  </div>
+
+  <!-- Ver disponibilidad -->
+  <div class="mb-4 border p-3 rounded bg-light text-center">
+    <h5 class="mb-3">Ver disponibilidad de habitaciones por fecha</h5>
+    <div class="d-flex justify-content-center align-items-end gap-3 flex-wrap">
+      <label>Establecimiento</label>
+      <select class="form-control shadow-sm " [(ngModel)]="establecimientoDisponibilidadId">
+        <option [ngValue]="undefined" disabled selected>Seleccione un establecimiento</option>
+        <option *ngFor="let est of establecimientos" [ngValue]="est.id">{{ est.nombre }}</option>
+      </select>
+      <div>
+        <label>Fecha Entrada</label>
+        <input type="date" class="form-control shadow-sm " [(ngModel)]="fechaDisponibilidadInicio">
+      </div>
+      <div>
+        <label>Fecha Salida</label>
+        <input type="date" class="form-control shadow-sm" [(ngModel)]="fechaDisponibilidadFin">
+      </div>
+      <div>
+        <button class="btn btn-primary" type="button"
+          (click)="verDisponibilidadHabitaciones()"
+          [disabled]="!fechaDisponibilidadInicio || !fechaDisponibilidadFin || !establecimientoDisponibilidadId">
+          Ver Disponibilidad
+        </button>
+        <!-- Botón para volver, solo si la tabla de disponibilidad está activa -->
+        <button *ngIf="habitacionesDisponibilidad.length > 0"
+          class="btn btn-secondary ms-2"
+          type="button"
+          (click)="verTodasHabitaciones()">
+          Ver todas las habitaciones
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de disponibilidad -->
+  <div *ngIf="habitacionesDisponibilidad.length > 0" class="mt-4">
+    <h5>Estado de habitaciones entre {{ fechaDisponibilidadInicio }} y {{ fechaDisponibilidadFin }}</h5>
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Número</th>
+          <th>Tipo</th>
+          <th>Estado Actual</th>
+          <th>Establecimiento ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let h of habitacionesDisponibilidad">
+          <td>{{ h.id }}</td>
+          <td>{{ h.numero }}</td>
+          <td>{{ h.tipo }}</td>
+          <td [ngClass]="{ 'text-success': h.estadoActual === 'Disponible', 'text-danger': h.estadoActual === 'Ocupada' }">
+            {{ h.estadoActual }}
+          </td>
+          <td>{{ getEstablecimientoNombre(h.establecimientoId) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tabla principal o mensaje -->
+  <div *ngIf="habitacionesDisponibilidad.length === 0 && (habitacionesFiltradas.length > 0 || !buscandoHabitaciones); else sinResultadosHabitaciones">
+    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Número</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Establecimiento ID</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let h of habitacionesFiltradas">
+          <td>{{ h.id }}</td>
+          <td>{{ h.numero }}</td>
+          <td>{{ h.tipo }}</td>
+          <td>{{ h.estado }}</td>
+          <td>{{ h.establecimientoId }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar(h)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="eliminar(h)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mensaje si no hay resultados -->
+  <ng-template #sinResultadosHabitaciones>
+    <div *ngIf="habitacionesDisponibilidad.length === 0" class="alert alert-warning text-center mt-4">
+      No se encontraron habitaciones con esos criterios.
+    </div>
+  </ng-template>
+
+  <!-- Modal para formulario Añadir/Editar -->
+  <div *ngIf="editandoEntidad" class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content p-3">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ esNuevo ? 'Añadir' : 'Editar' }} Habitación</h5>
+        </div>
+        <form (ngSubmit)="guardar()" #formAdmin="ngForm" class="modal-body">
+          <label>Número de habitación</label>
+          <input type="text" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control shadow-sm mb-2" required>
+          <label>Tipo</label>
+          <select [(ngModel)]="editandoEntidad.tipo" name="tipo" class="form-control shadow-sm mb-2" required>
+            <option [value]="''" disabled selected>Seleccione tipo</option>
+            <option value="Individual">Individual</option>
+            <option value="Doble">Doble</option>
+          </select>
+          <label>Estado</label>
+          <select [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control shadow-sm  mb-2" required>
+            <option [value]="''" disabled selected>Seleccione estado</option>
+            <option value="DISPONIBLE">DISPONIBLE</option>
+            <option value="OCUPADA">OCUPADA</option>
+          </select>
+          <label>Establecimiento</label>
+          <select [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" class="form-control shadow-sm mb-2" required>
+            <option [ngValue]="undefined" disabled selected>Seleccione un establecimiento</option>
+            <option *ngFor="let est of establecimientos" [ngValue]="est.id">{{ est.nombre }}</option>
+          </select>
+          <div class="mt-3 d-flex justify-content-end gap-2">
+            <button type="submit" class="btn btn-primary" [disabled]="formAdmin.invalid">Guardar</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

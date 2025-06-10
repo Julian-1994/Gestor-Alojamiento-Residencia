@@ -1,6 +1,4 @@
-
 <div class="bg-primary-subtle p-5 w-100 mb-5 shadow-lg rounded-4 header-admin">
-  
   <div style="position: absolute; top: 12px; right: 32px; z-index: 10;" *ngIf="usuarioActual">
     <span style="font-size: 0.95rem;">
       Has iniciado sesión como: <strong>{{ usuarioActual.nombreUsuario }}</strong>
@@ -10,7 +8,7 @@
   <div class="row align-items-center">
     <!-- Imagen a la izquierda -->
     <div class="col-2 text-start">
-   <img src="./R (2).png" alt="Logo" width="130" height="130">
+      <img src="./R (2).png" alt="Logo" width="130" height="130">
     </div>
 
     <!-- Título centrado -->
@@ -24,549 +22,49 @@
   </div>
 </div>
 <div class="container">
-
   <div class="container mb-4">
-  <div class="row justify-content-center">
-    <div class="col-md-10">
-      <div class="alert alert-info text-center fs-5">
-        Bienvenido al <strong>Panel de Administración de Residencias VitaSalud</strong>. 
-        Desde aquí puedes gestionar reservas, personas, habitaciones, establecimientos y usuarios de forma centralizada y sencilla.
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="d-flex justify-content-center mb-4">
-  <nav class="nav nav-tabs">
-    <a class="nav-link" [class.active]="mostrarReservas" (click)="mostrarEntidad('reservas')">Reservas</a>
-    <a class="nav-link" [class.active]="mostrarPersonas" (click)="mostrarEntidad('personas')">Personas</a>
-    <a class="nav-link" [class.active]="mostrarHabitaciones" (click)="mostrarEntidad('habitaciones')">Habitaciones</a>
-    <a class="nav-link" [class.active]="mostrarEstablecimientos" (click)="mostrarEntidad('establecimientos')">Establecimientos</a>
-    <a class="nav-link" [class.active]="mostrarUsuarios" (click)="mostrarEntidad('usuarios')">Usuarios</a>
-  </nav>
-</div>
-
-<!-- Tabla Reservas -->
-<div *ngIf="mostrarReservas" class="mb-5">
-  <h2 class="text-center">Reservas</h2>
-  <button class="btn btn-success mb-3" (click)="abrirReservaTrasRecarga()">Añadir Reservas</button>
-
-  <!-- Filtros -->
-  <div class="row g-2 mb-4">
-    <div class="col-md">
-      <input class="form-control shadow-sm" [(ngModel)]="filtroReservas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroReservas()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm" [(ngModel)]="filtroReservas.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroReservas()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm " type="date" [(ngModel)]="filtroReservas.fechaDesde" (change)="aplicarFiltroReservas()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm" type="date" [(ngModel)]="filtroReservas.fechaHasta" (change)="aplicarFiltroReservas()">
-    </div>
-  </div>
-
-  <!-- Tabla o mensaje -->
-  <div *ngIf="reservasFiltradas.length > 0 || !buscandoReservas; else sinResultadosReservas">
-    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
-      <thead class="table-light">
-        <tr> 
-          <th>ID</th>
-          <th>DNI Paciente</th>
-          <th>ID Establecimiento</th>
-          <th>ID Habitacion</th>
-          <th>Fecha Entrada</th>
-          <th>Fecha Salida</th>
-          <th>Motivo Entrada</th>
-          <th>Observaciones</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let r of reservasFiltradas">
-          <td>{{ r.id}}</td>
-          <td>{{ r.personaDni }}<button class="btn btn-link btn-sm p-0 ms-2" (click)="verPaciente(r.personaDni)">Ver paciente</button></td>
-          <td>{{ r.establecimientoId }}</td>
-          <td>{{ r.habitacionId }}</td>
-          <td>{{ r.fechaEntrada | date:'yyyy/MM/dd' }}</td>
-          <td>{{ r.fechaSalida | date:'yyyy/MM/dd' }}</td>
-          <td>{{ r.motivoEntrada }}</td>
-          <td>{{ r.observaciones }}</td>
-          <td>
-            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('reservas', r)">Editar</button>
-            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('reservas', r)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <!-- Modal flotante para mostrar datos del paciente -->
-<div *ngIf="pacienteSeleccionado" class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.3); position: fixed; top:0; left:0; width:100vw; height:100vh; z-index:1050;">
-  <div class="modal-dialog">
-    <div class="modal-content p-3">
-      <div class="modal-header">
-        <h5 class="modal-title">Datos del paciente</h5>
-        <button type="button" class="btn-close" (click)="cerrarPaciente()"></button>
-      </div>
-      <div class="modal-body">
-        <p><strong>Nombre:</strong> {{ pacienteSeleccionado.nombre }}</p>
-        <p><strong>Apellidos:</strong> {{ pacienteSeleccionado.apellidos }}</p>
-        <p><strong>DNI:</strong> {{ pacienteSeleccionado.dni }}</p>
-        <p><strong>Fecha Nacimiento:</strong> {{ pacienteSeleccionado.fechaNacimiento | date:'dd/MM/yyyy' }}</p>
-        <p><strong>Teléfono:</strong> {{ pacienteSeleccionado.telefono }}</p>
-        <p><strong>Email:</strong> {{ pacienteSeleccionado.email }}</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="cerrarPaciente()">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
-  </div>
-
-  <!-- Mensaje si no hay resultados -->
-  <ng-template #sinResultadosReservas>
-    <div class="alert alert-warning text-center">
-      No se encontraron reservas con esos criterios.
-      <button class="btn btn-link" (click)="resetearFiltrosReservas()">Ver todo</button>
-    </div>
-  </ng-template>
-</div>
-
-<!-- Tabla Personas -->
-<div *ngIf="mostrarPersonas" class="mb-5">
-  <h2 class="text-center">Personas</h2>
-  <button class="btn btn-success mb-3" (click)="abrirNuevo('personas')">Añadir Persona</button>
-
-  <!-- Filtros -->
-  <div class="row g-2 mb-3">
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroPersonas.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroPersonas()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm" [(ngModel)]="filtroPersonas.apellidos" placeholder="Buscar por apellidos" (input)="aplicarFiltroPersonas()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroPersonas.dni" placeholder="Buscar por DNI" (input)="aplicarFiltroPersonas()">
-    </div>
-  </div>
-
-  <!-- Tabla o mensaje -->
-  <div *ngIf="personasFiltradas.length > 0 || !buscandoPersonas; else sinResultadosPersonas">
-    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
-      <thead class="table-light">
-        <tr>
-          <th>Nombre</th>
-          <th>Apellidos</th>
-          <th>DNI</th>
-          <th>Fecha Nacimiento</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let p of personasFiltradas">
-          <td>{{ p.nombre }}</td>
-          <td>{{ p.apellidos }}</td>
-          <td>{{ p.dni }}</td>
-          <td>{{ p.fechaNacimiento | date:'dd/MM/yyyy' }}</td>
-          <td>{{ p.telefono }}</td>
-          <td>{{ p.email }}</td>
-          <td>
-            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('personas', p)">Editar</button>
-            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('personas', p)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Mensaje si no hay resultados -->
-  <ng-template #sinResultadosPersonas>
-    <div class="alert alert-warning text-center">
-      No se encontraron personas con esos criterios.
-      <button class="btn btn-link" (click)="resetearFiltrosPersonas()">Ver todo</button>
-    </div>
-  </ng-template>
-</div>
-
-<!-- Tabla Habitaciones -->
-<div *ngIf="mostrarHabitaciones" class="mb-5">
-  <h2 class="text-center mb-3">Habitaciones</h2>
-  <button class="btn btn-success mb-2" (click)="abrirNuevo('habitaciones')">Añadir Habitación</button>
-
-  <!-- Filtros -->
-  <div *ngIf="habitacionesDisponibilidad.length === 0" class="row g-2 mb-3">
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.numero" placeholder="Buscar por número" (input)="aplicarFiltroHabitaciones()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.tipo" placeholder="Buscar por tipo" (input)="aplicarFiltroHabitaciones()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroHabitaciones.estado" placeholder="Buscar por estado" (input)="aplicarFiltroHabitaciones()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm" [(ngModel)]="filtroHabitaciones.establecimientoId" placeholder="Establecimiento ID" (input)="aplicarFiltroHabitaciones()">
-    </div>
-  </div>
-
-  <!-- Ver disponibilidad -->
-<div class="mb-4 border p-3 rounded bg-light text-center">
-  <h5 class="mb-3">Ver disponibilidad de habitaciones por fecha</h5>
-  <div class="d-flex justify-content-center align-items-end gap-3 flex-wrap">
-    <label>Establecimiento</label>
-    <select class="form-control shadow-sm " [(ngModel)]="establecimientoDisponibilidadId">
-      <option [ngValue]="undefined" disabled selected>Seleccione un establecimiento</option>
-      <option *ngFor="let est of establecimientos" [ngValue]="est.id">{{ est.nombre }}</option>
-    </select>
-    <div>
-      <label>Fecha Entrada</label>
-      <input type="date" class="form-control shadow-sm " [(ngModel)]="fechaDisponibilidadInicio">
-    </div>
-    <div>
-      <label>Fecha Salida</label>
-      <input type="date" class="form-control shadow-sm" [(ngModel)]="fechaDisponibilidadFin">
-    </div>
-    <div>
-      <button class="btn btn-primary" type="button"
-        (click)="verDisponibilidadHabitaciones()"
-        [disabled]="!fechaDisponibilidadInicio || !fechaDisponibilidadFin || !establecimientoDisponibilidadId">
-        Ver Disponibilidad
-      </button>
-      <!-- Botón para volver, solo si la tabla de disponibilidad está activa -->
-      <button *ngIf="habitacionesDisponibilidad.length > 0"
-        class="btn btn-secondary ms-2"
-        type="button"
-        (click)="verTodasHabitaciones()">
-        Ver todas las habitaciones
-      </button>
-    </div>
-  </div>
-</div>
-
-  <!-- Tabla de disponibilidad -->
-  <div *ngIf="habitacionesDisponibilidad.length > 0" class="mt-4">
-    <h5>Estado de habitaciones entre {{ fechaDisponibilidadInicio }} y {{ fechaDisponibilidadFin }}</h5>
-    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>Número</th>
-          <th>Tipo</th>
-          <th>Estado Actual</th>
-          <th>Establecimiento ID</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let h of habitacionesDisponibilidad">
-        <td>{{ h.id }}</td>
-        <td>{{ h.numero }}</td>
-        <td>{{ h.tipo }}</td>
-        <td [ngClass]="{ 'text-success': h.estadoActual === 'Disponible', 'text-danger': h.estadoActual === 'Ocupada' }">
-          {{ h.estadoActual }}
-        </td>
-        <td>{{ getEstablecimientoNombre(h.establecimientoId) }}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Tabla principal o mensaje -->
-  <div *ngIf="habitacionesDisponibilidad.length === 0 && (habitacionesFiltradas.length > 0 || !buscandoHabitaciones); else sinResultadosHabitaciones">
-    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>Número</th>
-          <th>Tipo</th>
-          <th>Estado</th>
-          <th>Establecimiento ID</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let h of habitacionesFiltradas">
-          <td>{{ h.id }}</td>
-          <td>{{ h.numero }}</td>
-          <td>{{ h.tipo }}</td>
-          <td>{{ h.estado }}</td>
-          <td>{{ h.establecimientoId }}</td>
-          <td>
-            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('habitaciones', h)">Editar</button>
-            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('habitaciones', h)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Mensaje si no hay resultados -->
-  <ng-template #sinResultadosHabitaciones>
-    <div *ngIf="habitacionesDisponibilidad.length === 0" class="alert alert-warning text-center mt-4">
-    No se encontraron habitaciones con esos criterios.
-  </div>
-</ng-template>
-</div>
-
-<!-- Tabla Establecimientos -->
-<div *ngIf="mostrarEstablecimientos" class="mb-5">
-  <h2 class="text-center">Establecimientos</h2>
-  <button class="btn btn-success mb-3" (click)="abrirNuevo('establecimientos')">Añadir Establecimiento</button>
-
-  <!-- Filtros -->
-  <div *ngIf="habitacionesDisponibilidad.length === 0" class="row g-2 mb-3">
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroEstablecimientos.nombre" placeholder="Buscar por nombre" (input)="aplicarFiltroEstablecimientos()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm" [(ngModel)]="filtroEstablecimientos.direccion" placeholder="Buscar por dirección" (input)="aplicarFiltroEstablecimientos()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm" [(ngModel)]="filtroEstablecimientos.telefono" placeholder="Buscar por teléfono" (input)="aplicarFiltroEstablecimientos()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroEstablecimientos.capacidad" placeholder="Buscar por capacidad" (input)="aplicarFiltroEstablecimientos()">
-    </div>
-  </div>
-
-  <!-- Tabla o mensaje -->
-  <div *ngIf="establecimientosFiltrados.length > 0 || !buscandoEstablecimientos; else sinResultadosEstablecimientos">
-    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th>Capacidad</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let e of establecimientosFiltrados">
-          <td>{{ e.id }}</td>
-          <td>{{ e.nombre }}</td>
-          <td>{{ e.direccion }}</td>
-          <td>{{ e.telefono }}</td>
-          <td>{{ e.capacidad }}</td>
-          <td>
-            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('establecimientos', e)">Editar</button>
-            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('establecimientos', e)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Mensaje si no hay resultados -->
-  <ng-template #sinResultadosEstablecimientos>
-    <div class="alert alert-warning text-center">
-      No se encontraron establecimientos con esos criterios.
-      <button class="btn btn-link" (click)="resetearFiltrosEstablecimientos()">Ver todo</button>
-    </div>
-  </ng-template>
-</div>
-
-<!-- Tabla Usuarios -->
-<div *ngIf="mostrarUsuarios" class="mb-5">
-  <h2 class="text-center">Usuarios</h2>
-  <button class="btn btn-success mb-3" (click)="abrirNuevo('usuarios')">Añadir Usuario</button>
-
-  <!-- Filtros -->
-  <div class="row g-2 mb-3">
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroUsuarios.nombreUsuario" placeholder="Buscar por nombre de usuario" (input)="aplicarFiltroUsuarios()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm" [(ngModel)]="filtroUsuarios.rol" placeholder="Buscar por rol" (input)="aplicarFiltroUsuarios()">
-    </div>
-    <div class="col-md">
-      <input class="form-control shadow-sm " [(ngModel)]="filtroUsuarios.email" placeholder="Buscar por email" (input)="aplicarFiltroUsuarios()">
-    </div>
-  </div>
-
-  <!-- Tabla o mensaje -->
-  <div *ngIf="usuariosFiltrados.length > 0 || !buscandoUsuarios; else sinResultadosUsuarios">
-    <table class="table table-bordered text-center shadow-sm  rounded-4 bg-white  table-hover align-middle text-center modern-table  ">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>Nombre de usuario</th>
-          <th>Contraseña</th>
-          <th>Rol</th>
-          <th>Email</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let u of usuariosFiltrados">
-          <td>{{ u.id }}</td>
-          <td>{{ u.nombreUsuario }}</td>
-          <td>{{ u.contrasenya }}</td>
-          <td>{{ u.rol }}</td>
-          <td>{{ u.email }}</td>
-          <td>
-            <button class="btn btn-primary btn-sm me-1" (click)="abrirEditar('usuarios', u)">Editar</button>
-            <button class="btn btn-danger btn-sm" (click)="eliminarEntidad('usuarios', u)">Eliminar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Mensaje si no hay resultados -->
-  <ng-template #sinResultadosUsuarios>
-    <div class="alert alert-warning text-center">
-      No se encontraron usuarios con esos criterios.
-      <button class="btn btn-link" (click)="resetearFiltrosUsuarios()">Ver todo</button>
-    </div>
-  </ng-template>
-</div>
-
-<!-- Modal para formulario Añadir/Editar -->
-<div *ngIf="editandoEntidad" class="modal show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content p-3">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ esNuevo ? 'Añadir' : 'Editar' }} {{ entidadTipo | titlecase }}</h5>
-      </div>
-
-            <!-- Indicador de carga -->
-      <div *ngIf="cargandoEstablecimientos" class="modal-body">
-        <p>Cargando establecimientos...</p>
-      </div>
-
-      <form *ngIf="!cargandoEstablecimientos" (ngSubmit)="guardar()" #formAdmin="ngForm" class="modal-body">
-
-        <!-- Reserva -->
-        <ng-container *ngIf="entidadTipo === 'reservas'">
-      
-          <label>Persona DNI</label>
-  <select id="select-persona-dni" class="form-control shadow-sm  mb-2" required>
-    <option [ngValue]="null" disabled>Seleccione una persona</option>
-    <option *ngFor="let persona of personas" [value]="persona.dni">
-      {{ persona.dni }} - {{ persona.nombre }} {{ persona.apellidos }}
-    </option>
-  </select>
-
-           <label>Establecimiento ID</label>
-        <select class="form-control shadow-sm mb-2" [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" required>
-                   <option [ngValue]="null" disabled>Seleccione un establecimiento</option>
-          <option *ngFor="let establecimiento of establecimientos" [value]="establecimiento.id">{{ establecimiento.id }}</option>
-        </select>
-
-        <label>Habitación ID</label>
-<select class="form-control shadow-sm mb-2"
-        [(ngModel)]="editandoEntidad.habitacionId"
-        name="habitacionId"
-        required>
-  <option [ngValue]="null" disabled>Seleccione una habitacion</option>
-  <option *ngFor="let habitacion of habitacionesFiltradasPorEstablecimiento" [value]="habitacion.id">
-    {{ habitacion.id }}
-  </option>
-</select>
-
-
-          <label>Fecha Entrada</label>
-          <input type="date" [(ngModel)]="editandoEntidad.fechaEntrada" name="fechaEntrada" class="form-control shadow-sm mb-2" required>
-
-          <label>Fecha Salida</label>
-          <input type="date" [(ngModel)]="editandoEntidad.fechaSalida" name="fechaSalida" class="form-control shadow-sm mb-2" required>
-
-          <label>Motivo Entrada</label>
-          <input type="text" [(ngModel)]="editandoEntidad.motivoEntrada" name="motivoEntrada" class="form-control shadow-sm mb-2">
-
-          <label>Observaciones</label>
-          <textarea [(ngModel)]="editandoEntidad.observaciones" name="observaciones" class="form-control shadow-sm  mb-2"></textarea>
-        </ng-container>
-
-        <!-- Persona -->
-        <ng-container *ngIf="entidadTipo === 'personas'">
-          <label>Nombre</label>
-          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control shadow-sm mb-2" required>
-
-          <label>Apellidos</label>
-          <input type="text" [(ngModel)]="editandoEntidad.apellidos" name="apellidos" class="form-control shadow-sm mb-2" required>
-
-          <label *ngIf="esNuevo">DNI</label>
-          <input *ngIf="esNuevo" type="text" [(ngModel)]="editandoEntidad.dni" name="dni" class="form-control shadow-sm mb-2" required>
-
-          <label>Fecha Nacimiento</label>
-          <input type="date" [(ngModel)]="editandoEntidad.fechaNacimiento" name="fechaNacimiento" class="form-control shadow-sm  mb-2">
-
-          <label>Teléfono</label>
-          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control shadow-sm  mb-2">
-
-          <label>Email</label>
-          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control shadow-sm mb-2">
-        </ng-container>
-
-        <!-- Habitación -->
-        <ng-container *ngIf="entidadTipo === 'habitaciones'">
-
-          <label>Número de habitación</label>
-          <input type="text" [(ngModel)]="editandoEntidad.numero" name="numero" class="form-control shadow-sm mb-2" required>
-
-          <label>Tipo</label>
-<select [(ngModel)]="editandoEntidad.tipo" name="tipo" class="form-control shadow-sm mb-2" required>
-  <option [value]="''" disabled selected>Seleccione tipo</option>
-  <option value="Individual">Individual</option>
-  <option value="Doble">Doble</option>
-</select>
-
-<label>Estado</label>
-<select [(ngModel)]="editandoEntidad.estado" name="estado" class="form-control shadow-sm  mb-2" required>
-  <option [value]="''" disabled selected>Seleccione estado</option>
-  <option value="DISPONIBLE">DISPONIBLE</option>
-  <option value="OCUPADA">OCUPADA</option>
-</select>
-
-          <label>Establecimiento</label>
-         <select [(ngModel)]="editandoEntidad.establecimientoId" name="establecimientoId" class="form-control shadow-sm mb-2" required>
-          <option [ngValue]="undefined" disabled selected>Seleccione un establecimiento</option>
-         <option *ngFor="let est of establecimientos" [ngValue]="est.id">{{ est.nombre }}</option>
-          </select>
-        </ng-container>
-
-        <!-- Establecimiento -->
-        <ng-container *ngIf="entidadTipo === 'establecimientos'">
-          <label>Nombre</label>
-          <input type="text" [(ngModel)]="editandoEntidad.nombre" name="nombre" class="form-control shadow-sm mb-2" required>
-
-          <label>Dirección</label>
-          <input type="text" [(ngModel)]="editandoEntidad.direccion" name="direccion" class="form-control shadow-sm  mb-2">
-
-          <label>Teléfono</label>
-          <input type="text" [(ngModel)]="editandoEntidad.telefono" name="telefono" class="form-control shadow-sm b-2">
-
-          <label>Capacidad</label>
-          <input type="number" [(ngModel)]="editandoEntidad.capacidad" name="capacidad" class="form-control shadow-sm mb-2">
-        </ng-container>
-
-        <!-- Usuario -->
-        <ng-container *ngIf="entidadTipo === 'usuarios'">
-          <label>Nombre de usuario</label>
-          <input type="text" [(ngModel)]="editandoEntidad.nombreUsuario" name="nombreUsuario" class="form-control shadow-sm mb-2" required>
-
-          <label>Contraseña</label>
-          <input type="password" [(ngModel)]="editandoEntidad.contrasenya" name="contrasenya" class="form-control shadow-sm mb-2" required>
-
-          <label>Rol</label>
-          <input type="text" [(ngModel)]="editandoEntidad.rol" name="rol" class="form-control shadow-sm mb-2">
-
-          <label>Email</label>
-          <input type="email" [(ngModel)]="editandoEntidad.email" name="email" class="form-control shadow-sm mb-2">
-        </ng-container>
-
-        <!-- Botones -->
-        <div class="mt-3 d-flex justify-content-end gap-2">
-          <button type="submit" class="btn btn-primary" [disabled]="formAdmin.invalid">Guardar</button>
-          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <div class="alert alert-info text-center fs-5">
+          Bienvenido al <strong>Panel de Administración de Residencias VitaSalud</strong>. 
+          Desde aquí puedes gestionar reservas, personas, habitaciones, establecimientos y usuarios de forma centralizada y sencilla.
         </div>
-      </form>
+      </div>
     </div>
   </div>
-</div>
+
+  <div class="d-flex justify-content-center mb-4">
+    <nav class="nav nav-tabs">
+      <a class="nav-link" [class.active]="mostrarReservas" (click)="mostrarEntidad('reservas')">Reservas</a>
+      <a class="nav-link" [class.active]="mostrarPersonas" (click)="mostrarEntidad('personas')">Personas</a>
+      <a class="nav-link" [class.active]="mostrarHabitaciones" (click)="mostrarEntidad('habitaciones')">Habitaciones</a>
+      <a class="nav-link" [class.active]="mostrarEstablecimientos" (click)="mostrarEntidad('establecimientos')">Establecimientos</a>
+      <a class="nav-link" [class.active]="mostrarUsuarios" (click)="mostrarEntidad('usuarios')">Usuarios</a>
+    </nav>
+  </div>
+
+  <!-- Tabla Reservas -->
+  <div *ngIf="mostrarReservas" class="mb-5">
+    <app-reserva [reservas]="reservas" [personas]="personas" [establecimientos]="establecimientos" [habitaciones]="habitaciones" [habitacionesFiltradasPorEstablecimiento]="habitacionesFiltradasPorEstablecimiento" [filtroReservas]="filtroReservas" [reservasFiltradas]="reservasFiltradas" [buscandoReservas]="buscandoReservas" [pacienteSeleccionado]="pacienteSeleccionado" [editandoEntidad]="editandoEntidad" [esNuevo]="esNuevo"></app-reserva>
+  </div>
+
+  <!-- Tabla Personas -->
+  <div *ngIf="mostrarPersonas" class="mb-5">
+    <app-persona [personas]="personas" [filtroPersonas]="filtroPersonas" [personasFiltradas]="personasFiltradas" [buscandoPersonas]="buscandoPersonas" [editandoEntidad]="editandoEntidad" [esNuevo]="esNuevo"></app-persona>
+  </div>
+
+  <!-- Tabla Habitaciones -->
+  <div *ngIf="mostrarHabitaciones" class="mb-5">
+    <app-habitacion [habitaciones]="habitaciones" [establecimientos]="establecimientos" [reservas]="reservas" [filtroHabitaciones]="filtroHabitaciones" [habitacionesFiltradas]="habitacionesFiltradas" [buscandoHabitaciones]="buscandoHabitaciones" [editandoEntidad]="editandoEntidad" [esNuevo]="esNuevo" [habitacionesDisponibilidad]="habitacionesDisponibilidad" [fechaDisponibilidadInicio]="fechaDisponibilidadInicio" [fechaDisponibilidadFin]="fechaDisponibilidadFin" [establecimientoDisponibilidadId]="establecimientoDisponibilidadId"></app-habitacion>
+  </div>
+
+  <!-- Tabla Establecimientos -->
+  <div *ngIf="mostrarEstablecimientos" class="mb-5">
+    <app-establecimiento [establecimientos]="establecimientos" [filtroEstablecimientos]="filtroEstablecimientos" [establecimientosFiltrados]="establecimientosFiltrados" [buscandoEstablecimientos]="buscandoEstablecimientos" [editandoEntidad]="editandoEntidad" [esNuevo]="esNuevo"></app-establecimiento>
+  </div>
+
+  <!-- Tabla Usuarios -->
+  <div *ngIf="mostrarUsuarios" class="mb-5">
+    <app-usuario [usuarios]="usuarios" [filtroUsuarios]="filtroUsuarios" [usuariosFiltrados]="usuariosFiltrados" [buscandoUsuarios]="buscandoUsuarios" [editandoEntidad]="editandoEntidad" [esNuevo]="esNuevo"></app-usuario>
+  </div>
 </div>

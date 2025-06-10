@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.Gestor_Alojamiento.Model.Habitacion;
 import com.Gestor_Alojamiento.Servicios.HabitacionServicio;
-import DTO.HabitacionDTO;
+import com.Gestor_Alojamiento.DTO.HabitacionDTO;
 
 @RestController
 @RequestMapping("/api/habitaciones")

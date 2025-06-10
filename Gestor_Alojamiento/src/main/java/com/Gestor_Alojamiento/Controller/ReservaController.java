@@ -10,7 +10,7 @@ import com.Gestor_Alojamiento.Repositorios.EstablecimientoRepository;
 import com.Gestor_Alojamiento.Repositorios.HabitacionRepository;
 import com.Gestor_Alojamiento.Servicios.PersonaServicio;
 import com.Gestor_Alojamiento.Servicios.ReservaServicio;
-import DTO.ReservaDTO;
+import com.Gestor_Alojamiento.DTO.ReservaDTO;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")

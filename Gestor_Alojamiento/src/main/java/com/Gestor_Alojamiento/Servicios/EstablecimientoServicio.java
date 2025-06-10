@@ -9,7 +9,7 @@ import com.Gestor_Alojamiento.Model.Establecimiento;
 import com.Gestor_Alojamiento.Model.Habitacion;
 import com.Gestor_Alojamiento.Repositorios.EstablecimientoRepository;
 
-import DTO.EstablecimientoDTO;
+import com.Gestor_Alojamiento.DTO.EstablecimientoDTO;
 
 
 @Service

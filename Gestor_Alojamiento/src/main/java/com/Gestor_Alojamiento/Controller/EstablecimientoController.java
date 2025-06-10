@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.Gestor_Alojamiento.Model.Establecimiento;
 import com.Gestor_Alojamiento.Servicios.EstablecimientoServicio;
-import DTO.EstablecimientoDTO;
+import com.Gestor_Alojamiento.DTO.EstablecimientoDTO;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")

@@ -12,7 +12,7 @@ import com.Gestor_Alojamiento.Model.Habitacion;
 import com.Gestor_Alojamiento.Model.Reserva;
 import com.Gestor_Alojamiento.Repositorios.ReservaRepository;
 
-import DTO.ReservaDTO;
+import com.Gestor_Alojamiento.DTO.ReservaDTO;
 
 @Service
 public class ReservaServicio {

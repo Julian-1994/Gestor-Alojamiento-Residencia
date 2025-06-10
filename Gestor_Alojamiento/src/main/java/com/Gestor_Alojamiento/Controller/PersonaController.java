@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.Gestor_Alojamiento.Servicios.PersonaServicio;
 
-import DTO.PersonaDTO;
+import com.Gestor_Alojamiento.DTO.PersonaDTO;
 
 @RestController
 @RequestMapping("/api/personas")

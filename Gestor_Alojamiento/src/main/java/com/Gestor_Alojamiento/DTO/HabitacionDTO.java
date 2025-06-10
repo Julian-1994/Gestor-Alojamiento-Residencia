@@ -1,4 +1,4 @@
-package DTO;
+package com.Gestor_Alojamiento.DTO;
 
 import com.Gestor_Alojamiento.Model.EstadoHabitacion;
 
